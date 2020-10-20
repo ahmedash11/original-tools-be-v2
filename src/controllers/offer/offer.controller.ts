@@ -7,22 +7,22 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
 } from '@loopback/rest';
-import {Offer} from '../models';
-import {OfferRepository} from '../repositories';
+import {Offer} from '../../models';
+import {OfferRepository} from '../../repositories';
 
 export class OfferController {
   constructor(
     @repository(OfferRepository)
-    public offerRepository : OfferRepository,
+    public offerRepository: OfferRepository,
   ) {}
 
   @post('/offers', {
@@ -57,9 +57,7 @@ export class OfferController {
       },
     },
   })
-  async count(
-    @param.where(Offer) where?: Where<Offer>,
-  ): Promise<Count> {
+  async count(@param.where(Offer) where?: Where<Offer>): Promise<Count> {
     return this.offerRepository.count(where);
   }
 
@@ -78,9 +76,7 @@ export class OfferController {
       },
     },
   })
-  async find(
-    @param.filter(Offer) filter?: Filter<Offer>,
-  ): Promise<Offer[]> {
+  async find(@param.filter(Offer) filter?: Filter<Offer>): Promise<Offer[]> {
     return this.offerRepository.find(filter);
   }
 
@@ -120,7 +116,8 @@ export class OfferController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Offer, {exclude: 'where'}) filter?: FilterExcludingWhere<Offer>
+    @param.filter(Offer, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Offer>,
   ): Promise<Offer> {
     return this.offerRepository.findById(id, filter);
   }

@@ -1,6 +1,24 @@
-import {Entity, model, property} from '@loopback/repository';
+import {
+  belongsTo,
+  Entity,
+  hasMany,
+  model,
+  property,
+} from '@loopback/repository';
+import {Product} from './product.model';
 
-@model()
+@model({
+  settings: {
+    foreignKeys: {
+      fk_category_parentId: {
+        name: 'fk_category_parentId',
+        entity: 'Category',
+        entityKey: 'id',
+        foreignKey: 'parentId',
+      },
+    },
+  },
+})
 export class Category extends Entity {
   @property({
     type: 'number',
@@ -13,6 +31,15 @@ export class Category extends Entity {
     type: 'string',
   })
   title?: string;
+
+  @hasMany(() => Product)
+  products: Product[];
+
+  @belongsTo(() => Category)
+  parentId: number;
+
+  @hasMany(() => Category, {keyTo: 'parentId'})
+  categories: Category[];
 
   constructor(data?: Partial<Category>) {
     super(data);

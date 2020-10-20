@@ -7,22 +7,22 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
 } from '@loopback/rest';
-import {Tag} from '../models';
-import {TagRepository} from '../repositories';
+import {Tag} from '../../models';
+import {TagRepository} from '../../repositories';
 
 export class TagController {
   constructor(
     @repository(TagRepository)
-    public tagRepository : TagRepository,
+    public tagRepository: TagRepository,
   ) {}
 
   @post('/tags', {
@@ -57,9 +57,7 @@ export class TagController {
       },
     },
   })
-  async count(
-    @param.where(Tag) where?: Where<Tag>,
-  ): Promise<Count> {
+  async count(@param.where(Tag) where?: Where<Tag>): Promise<Count> {
     return this.tagRepository.count(where);
   }
 
@@ -78,9 +76,7 @@ export class TagController {
       },
     },
   })
-  async find(
-    @param.filter(Tag) filter?: Filter<Tag>,
-  ): Promise<Tag[]> {
+  async find(@param.filter(Tag) filter?: Filter<Tag>): Promise<Tag[]> {
     return this.tagRepository.find(filter);
   }
 
@@ -120,7 +116,7 @@ export class TagController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Tag, {exclude: 'where'}) filter?: FilterExcludingWhere<Tag>
+    @param.filter(Tag, {exclude: 'where'}) filter?: FilterExcludingWhere<Tag>,
   ): Promise<Tag> {
     return this.tagRepository.findById(id, filter);
   }

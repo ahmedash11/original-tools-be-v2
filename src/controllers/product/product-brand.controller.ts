@@ -1,22 +1,13 @@
-import {
-  repository,
-} from '@loopback/repository';
-import {
-  param,
-  get,
-  getModelSchemaRef,
-} from '@loopback/rest';
-import {
-  Product,
-  Brand,
-} from '../models';
-import {ProductRepository} from '../repositories';
+import {repository} from '@loopback/repository';
+import {get, getModelSchemaRef, param} from '@loopback/rest';
+import {Brand, Product} from '../../models';
+import {ProductRepository} from '../../repositories';
 
 export class ProductBrandController {
   constructor(
     @repository(ProductRepository)
     public productRepository: ProductRepository,
-  ) { }
+  ) {}
 
   @get('/products/{id}/brand', {
     responses: {

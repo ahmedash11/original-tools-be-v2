@@ -7,22 +7,22 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
 } from '@loopback/rest';
-import {Type} from '../models';
-import {TypeRepository} from '../repositories';
+import {Type} from '../../models';
+import {TypeRepository} from '../../repositories';
 
 export class TypeController {
   constructor(
     @repository(TypeRepository)
-    public typeRepository : TypeRepository,
+    public typeRepository: TypeRepository,
   ) {}
 
   @post('/types', {
@@ -57,9 +57,7 @@ export class TypeController {
       },
     },
   })
-  async count(
-    @param.where(Type) where?: Where<Type>,
-  ): Promise<Count> {
+  async count(@param.where(Type) where?: Where<Type>): Promise<Count> {
     return this.typeRepository.count(where);
   }
 
@@ -78,9 +76,7 @@ export class TypeController {
       },
     },
   })
-  async find(
-    @param.filter(Type) filter?: Filter<Type>,
-  ): Promise<Type[]> {
+  async find(@param.filter(Type) filter?: Filter<Type>): Promise<Type[]> {
     return this.typeRepository.find(filter);
   }
 
@@ -120,7 +116,7 @@ export class TypeController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Type, {exclude: 'where'}) filter?: FilterExcludingWhere<Type>
+    @param.filter(Type, {exclude: 'where'}) filter?: FilterExcludingWhere<Type>,
   ): Promise<Type> {
     return this.typeRepository.findById(id, filter);
   }

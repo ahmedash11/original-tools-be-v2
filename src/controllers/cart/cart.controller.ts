@@ -7,22 +7,22 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
 } from '@loopback/rest';
-import {Cart} from '../models';
-import {CartRepository} from '../repositories';
+import {Cart} from '../../models';
+import {CartRepository} from '../../repositories';
 
 export class CartController {
   constructor(
     @repository(CartRepository)
-    public cartRepository : CartRepository,
+    public cartRepository: CartRepository,
   ) {}
 
   @post('/carts', {
@@ -57,9 +57,7 @@ export class CartController {
       },
     },
   })
-  async count(
-    @param.where(Cart) where?: Where<Cart>,
-  ): Promise<Count> {
+  async count(@param.where(Cart) where?: Where<Cart>): Promise<Count> {
     return this.cartRepository.count(where);
   }
 
@@ -78,9 +76,7 @@ export class CartController {
       },
     },
   })
-  async find(
-    @param.filter(Cart) filter?: Filter<Cart>,
-  ): Promise<Cart[]> {
+  async find(@param.filter(Cart) filter?: Filter<Cart>): Promise<Cart[]> {
     return this.cartRepository.find(filter);
   }
 
@@ -120,7 +116,7 @@ export class CartController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Cart, {exclude: 'where'}) filter?: FilterExcludingWhere<Cart>
+    @param.filter(Cart, {exclude: 'where'}) filter?: FilterExcludingWhere<Cart>,
   ): Promise<Cart> {
     return this.cartRepository.findById(id, filter);
   }

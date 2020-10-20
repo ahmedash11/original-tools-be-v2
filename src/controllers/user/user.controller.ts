@@ -7,22 +7,22 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
 } from '@loopback/rest';
-import {User} from '../models';
-import {UserRepository} from '../repositories';
+import {User} from '../../models';
+import {UserRepository} from '../../repositories';
 
 export class UserController {
   constructor(
     @repository(UserRepository)
-    public userRepository : UserRepository,
+    public userRepository: UserRepository,
   ) {}
 
   @post('/users', {
@@ -57,9 +57,7 @@ export class UserController {
       },
     },
   })
-  async count(
-    @param.where(User) where?: Where<User>,
-  ): Promise<Count> {
+  async count(@param.where(User) where?: Where<User>): Promise<Count> {
     return this.userRepository.count(where);
   }
 
@@ -78,9 +76,7 @@ export class UserController {
       },
     },
   })
-  async find(
-    @param.filter(User) filter?: Filter<User>,
-  ): Promise<User[]> {
+  async find(@param.filter(User) filter?: Filter<User>): Promise<User[]> {
     return this.userRepository.find(filter);
   }
 
@@ -120,7 +116,7 @@ export class UserController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(User, {exclude: 'where'}) filter?: FilterExcludingWhere<User>
+    @param.filter(User, {exclude: 'where'}) filter?: FilterExcludingWhere<User>,
   ): Promise<User> {
     return this.userRepository.findById(id, filter);
   }

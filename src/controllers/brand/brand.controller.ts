@@ -7,22 +7,22 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
 } from '@loopback/rest';
-import {Brand} from '../models';
-import {BrandRepository} from '../repositories';
+import {Brand} from '../../models';
+import {BrandRepository} from '../../repositories';
 
 export class BrandController {
   constructor(
     @repository(BrandRepository)
-    public brandRepository : BrandRepository,
+    public brandRepository: BrandRepository,
   ) {}
 
   @post('/brands', {
@@ -57,9 +57,7 @@ export class BrandController {
       },
     },
   })
-  async count(
-    @param.where(Brand) where?: Where<Brand>,
-  ): Promise<Count> {
+  async count(@param.where(Brand) where?: Where<Brand>): Promise<Count> {
     return this.brandRepository.count(where);
   }
 
@@ -78,9 +76,7 @@ export class BrandController {
       },
     },
   })
-  async find(
-    @param.filter(Brand) filter?: Filter<Brand>,
-  ): Promise<Brand[]> {
+  async find(@param.filter(Brand) filter?: Filter<Brand>): Promise<Brand[]> {
     return this.brandRepository.find(filter);
   }
 
@@ -120,7 +116,8 @@ export class BrandController {
   })
   async findById(
     @param.path.number('id') id: number,
-    @param.filter(Brand, {exclude: 'where'}) filter?: FilterExcludingWhere<Brand>
+    @param.filter(Brand, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Brand>,
   ): Promise<Brand> {
     return this.brandRepository.findById(id, filter);
   }

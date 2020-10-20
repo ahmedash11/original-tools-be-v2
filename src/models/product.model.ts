@@ -1,14 +1,21 @@
-import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {Brand} from './brand.model';
+import {Category} from './category.model';
 
 @model({
   settings: {
     foreignKeys: {
-      fk_review_coffeeShopId: {
+      fk_product_brandId: {
         name: 'fk_product_brandId',
         entity: 'Brand',
         entityKey: 'id',
         foreignKey: 'brandId',
+      },
+      fk_product_categoryId: {
+        name: 'fk_product_categoryId',
+        entity: 'Category',
+        entityKey: 'id',
+        foreignKey: 'categoryId',
       },
     },
   },
@@ -28,6 +35,9 @@ export class Product extends Entity {
 
   @belongsTo(() => Brand)
   brandId: number;
+
+  @belongsTo(() => Category)
+  categoryId: number;
 
   constructor(data?: Partial<Product>) {
     super(data);

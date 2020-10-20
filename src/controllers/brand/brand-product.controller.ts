@@ -15,16 +15,13 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
-import {
-  Brand,
-  Product,
-} from '../models';
-import {BrandRepository} from '../repositories';
+import {Brand, Product} from '../../models';
+import {BrandRepository} from '../../repositories';
 
 export class BrandProductController {
   constructor(
     @repository(BrandRepository) protected brandRepository: BrandRepository,
-  ) { }
+  ) {}
 
   @get('/brands/{id}/products', {
     responses: {
@@ -61,11 +58,12 @@ export class BrandProductController {
           schema: getModelSchemaRef(Product, {
             title: 'NewProductInBrand',
             exclude: ['id'],
-            optional: ['brandId']
+            optional: ['brandId'],
           }),
         },
       },
-    }) product: Omit<Product, 'id'>,
+    })
+    product: Omit<Product, 'id'>,
   ): Promise<Product> {
     return this.brandRepository.products(id).create(product);
   }
@@ -88,7 +86,8 @@ export class BrandProductController {
       },
     })
     product: Partial<Product>,
-    @param.query.object('where', getWhereSchemaFor(Product)) where?: Where<Product>,
+    @param.query.object('where', getWhereSchemaFor(Product))
+    where?: Where<Product>,
   ): Promise<Count> {
     return this.brandRepository.products(id).patch(product, where);
   }
@@ -103,7 +102,8 @@ export class BrandProductController {
   })
   async delete(
     @param.path.number('id') id: number,
-    @param.query.object('where', getWhereSchemaFor(Product)) where?: Where<Product>,
+    @param.query.object('where', getWhereSchemaFor(Product))
+    where?: Where<Product>,
   ): Promise<Count> {
     return this.brandRepository.products(id).delete(where);
   }
