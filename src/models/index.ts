@@ -6,3 +6,5 @@ export * from './offer.model';
 export * from './product.model';
 export * from './tag.model';
 export * from './type.model';
+export * from './product-tag.model';
+export * from './product-type.model';

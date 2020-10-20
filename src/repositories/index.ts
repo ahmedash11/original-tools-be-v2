@@ -6,3 +6,5 @@ export * from './offer.repository';
 export * from './product.repository';
 export * from './tag.repository';
 export * from './type.repository';
+export * from './product-tag.repository';
+export * from './product-type.repository';

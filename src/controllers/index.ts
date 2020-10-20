@@ -7,6 +7,8 @@ export * from './category/category.controller';
 export * from './offer/offer.controller';
 export * from './product/product-brand.controller';
 export * from './product/product-category.controller';
+export * from './product/product-tag.controller';
+export * from './product/product-type.controller';
 export * from './product/product.controller';
 export * from './tag/tag.controller';
 export * from './type/type.controller';
