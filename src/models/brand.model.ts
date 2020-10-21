@@ -1,4 +1,4 @@
-import {Entity, model, property, hasMany} from '@loopback/repository';
+import {Entity, hasMany, model, property} from '@loopback/repository';
 import {Product} from './product.model';
 
 @model()
@@ -13,7 +13,28 @@ export class Brand extends Entity {
   @property({
     type: 'string',
   })
-  title?: string;
+  title: string;
+
+  @property({
+    type: 'string',
+  })
+  description?: string;
+
+  @property({
+    type: 'string',
+  })
+  img?: string;
+
+  @property({
+    type: 'number',
+  })
+  order: number;
+
+  @property({
+    type: 'boolean',
+    default: true,
+  })
+  active?: boolean;
 
   @hasMany(() => Product)
   products: Product[];

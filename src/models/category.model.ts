@@ -30,7 +30,18 @@ export class Category extends Entity {
   @property({
     type: 'string',
   })
-  title?: string;
+  title: string;
+
+  @property({
+    type: 'string',
+  })
+  img: string;
+
+  @property({
+    type: 'boolean',
+    default: true,
+  })
+  active?: boolean;
 
   @hasMany(() => Product)
   products: Product[];

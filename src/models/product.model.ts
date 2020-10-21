@@ -1,10 +1,16 @@
-import {belongsTo, Entity, model, property, hasMany} from '@loopback/repository';
+import {
+  belongsTo,
+  Entity,
+  hasMany,
+  model,
+  property,
+} from '@loopback/repository';
 import {Brand} from './brand.model';
 import {Category} from './category.model';
-import {Tag} from './tag.model';
 import {ProductTag} from './product-tag.model';
-import {Type} from './type.model';
 import {ProductType} from './product-type.model';
+import {Tag} from './tag.model';
+import {Type} from './type.model';
 
 @model({
   settings: {
@@ -36,6 +42,55 @@ export class Product extends Entity {
     type: 'string',
   })
   title?: string;
+
+  @property({
+    type: 'string',
+  })
+  description?: string;
+
+  @property({
+    type: 'string',
+  })
+  img?: string;
+
+  @property({
+    type: 'number',
+  })
+  price: number;
+
+  @property({
+    type: 'number',
+    dataType: 'FLOAT',
+  })
+  cost?: number;
+
+  @property({
+    type: 'number',
+  })
+  quantity: number;
+
+  @property({
+    type: 'string',
+  })
+  model?: string;
+
+  @property({
+    type: 'number',
+    default: 0,
+  })
+  views?: number;
+
+  @property({
+    type: 'boolean',
+    default: false,
+  })
+  landing?: boolean;
+
+  @property({
+    type: 'boolean',
+    default: true,
+  })
+  active?: boolean;
 
   @belongsTo(() => Brand)
   brandId: number;
