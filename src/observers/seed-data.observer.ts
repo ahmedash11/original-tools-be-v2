@@ -1,5 +1,9 @@
 import {lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
 import {repository} from '@loopback/repository';
+// import Brands from '../json/brands.json';
+// import Categories from '../json/categories.json';
+// import Products from '../json/products.json';
+// import {Brand, Category, Product} from '../models';
 import {
   BrandRepository,
   CategoryRepository,

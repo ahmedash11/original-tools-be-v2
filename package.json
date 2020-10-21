@@ -1,7 +1,7 @@
 {
-  "name": "test",
+  "name": "etools",
   "version": "0.0.1",
-  "description": "test",
+  "description": "etools Api Using loopback",
   "keywords": [
     "loopback-application",
     "loopback"
