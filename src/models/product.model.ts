@@ -34,7 +34,7 @@ export class Product extends Entity {
   @property({
     type: 'number',
     id: true,
-    generated: true,
+    // generated: true,
   })
   id: number;
 
@@ -45,6 +45,9 @@ export class Product extends Entity {
 
   @property({
     type: 'string',
+    mysql: {
+      dataType: 'LONGTEXT',
+    },
   })
   description?: string;
 
