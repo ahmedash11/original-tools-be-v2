@@ -1,16 +1,9 @@
 import {inject, lifeCycleObserver, LifeCycleObserver} from '@loopback/core';
 import {juggler} from '@loopback/repository';
+import devConfig from './ds.dev'; // import dev json
+import prodConfig from './ds.production'; // import prod json
 
-const config = {
-  name: 'db',
-  connector: 'mysql',
-  url: '',
-  host: 'localhost',
-  port: 3306,
-  user: 'root',
-  password: 'everestminds',
-  database: 'etools',
-};
+const config = process.env.NODE_ENV === 'PRODUCTION' ? prodConfig : devConfig;
 
 // Observe application's life cycle to disconnect the datasource when
 // application is stopped. This allows the application to be shut down
