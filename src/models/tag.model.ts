@@ -7,7 +7,7 @@ export class Tag extends Entity {
   @property({
     type: 'number',
     id: true,
-    generated: true,
+    // generated: true,
   })
   id?: number;
 

@@ -22,7 +22,7 @@ export class User extends Entity {
   @property({
     type: 'string',
   })
-  image?: string;
+  img?: string;
 
   constructor(data?: Partial<User>) {
     super(data);

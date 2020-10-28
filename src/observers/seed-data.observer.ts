@@ -55,7 +55,7 @@ export class SeedDataObserver implements LifeCycleObserver {
           new Brand({
             id: x.id,
             title: x.title,
-            img: x.image,
+            img: x.img,
             order: x.order,
           }),
       );
