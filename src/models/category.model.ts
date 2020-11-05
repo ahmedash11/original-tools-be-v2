@@ -6,6 +6,7 @@ import {
   property,
 } from '@loopback/repository';
 import {Product} from './product.model';
+import {Section} from './section.model';
 
 @model({
   settings: {
@@ -51,6 +52,9 @@ export class Category extends Entity {
 
   @hasMany(() => Category, {keyTo: 'parentId'})
   categories: Category[];
+
+  @belongsTo(() => Section)
+  sectionId: number;
 
   constructor(data?: Partial<Category>) {
     super(data);

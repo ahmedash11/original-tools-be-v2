@@ -8,3 +8,4 @@ export * from './tag.model';
 export * from './type.model';
 export * from './product-tag.model';
 export * from './product-type.model';
+export * from './section.model';
