@@ -62,7 +62,7 @@ export class Category extends Entity {
   parentId?: number;
 
   @hasMany(() => Category, {keyTo: 'parentId'})
-  categories: Category[];
+  subcategories: Category[];
 
   @belongsTo(() => Section)
   sectionId?: number;

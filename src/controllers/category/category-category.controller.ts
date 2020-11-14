@@ -24,7 +24,7 @@ export class CategoryCategoryController {
     protected categoryRepository: CategoryRepository,
   ) {}
 
-  @get('/categories/{id}/categories', {
+  @get('/categories/{id}/subcategories', {
     responses: {
       '200': {
         description: 'Array of Category has many Category',
@@ -40,10 +40,10 @@ export class CategoryCategoryController {
     @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<Category>,
   ): Promise<Category[]> {
-    return this.categoryRepository.categories(id).find(filter);
+    return this.categoryRepository.subcategories(id).find(filter);
   }
 
-  @post('/categories/{id}/categories', {
+  @post('/categories/{id}/subcategories', {
     responses: {
       '200': {
         description: 'Category model instance',
@@ -66,10 +66,10 @@ export class CategoryCategoryController {
     })
     category: Omit<Category, 'id'>,
   ): Promise<Category> {
-    return this.categoryRepository.categories(id).create(category);
+    return this.categoryRepository.subcategories(id).create(category);
   }
 
-  @patch('/categories/{id}/categories', {
+  @patch('/categories/{id}/subcategories', {
     responses: {
       '200': {
         description: 'Category.Category PATCH success count',
@@ -90,10 +90,10 @@ export class CategoryCategoryController {
     @param.query.object('where', getWhereSchemaFor(Category))
     where?: Where<Category>,
   ): Promise<Count> {
-    return this.categoryRepository.categories(id).patch(category, where);
+    return this.categoryRepository.subcategories(id).patch(category, where);
   }
 
-  @del('/categories/{id}/categories', {
+  @del('/categories/{id}/subcategories', {
     responses: {
       '200': {
         description: 'Category.Category DELETE success count',
@@ -106,6 +106,6 @@ export class CategoryCategoryController {
     @param.query.object('where', getWhereSchemaFor(Category))
     where?: Where<Category>,
   ): Promise<Count> {
-    return this.categoryRepository.categories(id).delete(where);
+    return this.categoryRepository.subcategories(id).delete(where);
   }
 }

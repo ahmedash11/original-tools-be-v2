@@ -25,30 +25,38 @@ export class CategoryRepository extends DefaultCrudRepository<
     typeof Category.prototype.id
   >;
 
-  public readonly categories: HasManyRepositoryFactory<
+  public readonly subcategories: HasManyRepositoryFactory<
     Category,
     typeof Category.prototype.id
   >;
 
-  public readonly section: BelongsToAccessor<Section, typeof Category.prototype.id>;
+  public readonly section: BelongsToAccessor<
+    Section,
+    typeof Category.prototype.id
+  >;
 
   constructor(
     @inject('datasources.db') dataSource: DbDataSource,
     @repository.getter('ProductRepository')
     protected productRepositoryGetter: Getter<ProductRepository>,
     @repository.getter('CategoryRepository')
-    protected categoryRepositoryGetter: Getter<CategoryRepository>, @repository.getter('SectionRepository') protected sectionRepositoryGetter: Getter<SectionRepository>,
+    protected categoryRepositoryGetter: Getter<CategoryRepository>,
+    @repository.getter('SectionRepository')
+    protected sectionRepositoryGetter: Getter<SectionRepository>,
   ) {
     super(Category, dataSource);
-    this.section = this.createBelongsToAccessorFor('section', sectionRepositoryGetter,);
+    this.section = this.createBelongsToAccessorFor(
+      'section',
+      sectionRepositoryGetter,
+    );
     this.registerInclusionResolver('section', this.section.inclusionResolver);
-    this.categories = this.createHasManyRepositoryFactoryFor(
-      'categories',
+    this.subcategories = this.createHasManyRepositoryFactoryFor(
+      'subcategories',
       Getter.fromValue(this),
     );
     this.registerInclusionResolver(
-      'categories',
-      this.categories.inclusionResolver,
+      'subcategories',
+      this.subcategories.inclusionResolver,
     );
 
     this.parent = this.createBelongsToAccessorFor(
