@@ -5,17 +5,14 @@ import {
   repository,
 } from '@loopback/repository';
 import {DbDataSource} from '../datasources';
-import Brands from '../json/brands.json';
-import Categories from '../json/categories.json';
-import Products from '../json/products.json';
-import ProductTags from '../json/productTags.json';
-import Tags from '../json/tags.json';
+import {Brands, Categories, Products, ProductTags, Tags} from '../json';
 import {Brand, Category, Product, ProductTag, Tag} from '../models';
 import {
   BrandRepository,
   CategoryRepository,
   ProductRepository,
   ProductTagRepository,
+  SectionRepository,
   TagRepository,
 } from '../repositories';
 /**
@@ -35,6 +32,7 @@ export class SeedDataObserver implements LifeCycleObserver {
     @repository('BrandRepository') private brandRepo: BrandRepository,
     @repository('CategoryRepository') private categoryRepo: CategoryRepository,
     @repository('ProductRepository') private productRepo: ProductRepository,
+    @repository('SectionRepository') private sectionRepo: SectionRepository,
     @repository('ProductTagRepository')
     private productTagRepo: ProductTagRepository,
 
@@ -101,8 +99,10 @@ export class SeedDataObserver implements LifeCycleObserver {
           }),
       );
       // await this.brandRepo.createAll(brands, {transaction: tx});
-      // await this.categoryRepo.createAll(categories, {transaction: tx});
+      // await this.sectionRepo.createAll(Sections, {transaction: tx});
       // await this.tagRepo.createAll(tags, {transaction: tx});
+
+      // await this.categoryRepo.createAll(categories, {transaction: tx});
       // await this.productRepo.createAll(products, {transaction: tx});
       // await this.productTagRepo.createAll(productTags, {transaction: tx});
       await tx.commit();

@@ -8,3 +8,4 @@ export * from './tag.repository';
 export * from './type.repository';
 export * from './product-tag.repository';
 export * from './product-type.repository';
+export * from './section.repository';
