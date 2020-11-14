@@ -50,7 +50,7 @@ export class Category extends Entity {
   parentId?: number;
 
   @hasMany(() => Category, {keyTo: 'parentId'})
-  categories: Category[];
+  subcategories: Category[];
 
   constructor(data?: Partial<Category>) {
     super(data);

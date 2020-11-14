@@ -1,9 +1,9 @@
-import {ApplicationConfig, TestApp} from './application';
+import {ApplicationConfig, EtoolsApp} from './application';
 
 export * from './application';
 
 export async function main(options: ApplicationConfig = {}) {
-  const app = new TestApp(options);
+  const app = new EtoolsApp(options);
   await app.boot();
   await app.start();
 

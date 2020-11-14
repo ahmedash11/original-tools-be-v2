@@ -24,7 +24,7 @@ export class CategoryRepository extends DefaultCrudRepository<
     typeof Category.prototype.id
   >;
 
-  public readonly categories: HasManyRepositoryFactory<
+  public readonly subcategories: HasManyRepositoryFactory<
     Category,
     typeof Category.prototype.id
   >;
@@ -37,13 +37,13 @@ export class CategoryRepository extends DefaultCrudRepository<
     protected categoryRepositoryGetter: Getter<CategoryRepository>,
   ) {
     super(Category, dataSource);
-    this.categories = this.createHasManyRepositoryFactoryFor(
-      'categories',
+    this.subcategories = this.createHasManyRepositoryFactoryFor(
+      'subcategories',
       Getter.fromValue(this),
     );
     this.registerInclusionResolver(
-      'categories',
-      this.categories.inclusionResolver,
+      'subcategories',
+      this.subcategories.inclusionResolver,
     );
 
     this.parent = this.createBelongsToAccessorFor(

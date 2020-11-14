@@ -4,19 +4,21 @@ import {
   IsolationLevel,
   repository,
 } from '@loopback/repository';
+import {genSalt, hash} from 'bcryptjs';
 import {DbDataSource} from '../datasources';
 import Brands from '../json/brands.json';
 import Categories from '../json/categories.json';
 import Products from '../json/products.json';
 import ProductTags from '../json/productTags.json';
 import Tags from '../json/tags.json';
-import {Brand, Category, Product, ProductTag, Tag} from '../models';
+import {Brand, Category, Product, ProductTag, Tag, User} from '../models';
 import {
   BrandRepository,
   CategoryRepository,
   ProductRepository,
   ProductTagRepository,
   TagRepository,
+  UserRepository,
 } from '../repositories';
 /**
  * This class will be bound to the application as a `LifeCycleObserver` during
@@ -35,6 +37,7 @@ export class SeedDataObserver implements LifeCycleObserver {
     @repository('BrandRepository') private brandRepo: BrandRepository,
     @repository('CategoryRepository') private categoryRepo: CategoryRepository,
     @repository('ProductRepository') private productRepo: ProductRepository,
+    @repository('UserRepository') private userRepo: UserRepository,
     @repository('ProductTagRepository')
     private productTagRepo: ProductTagRepository,
 
@@ -100,6 +103,12 @@ export class SeedDataObserver implements LifeCycleObserver {
             tagId: x.tagId,
           }),
       );
+      const admin = new User({
+        name: 'Ibrahim Rashad',
+        email: 'ibrahim@etools.com',
+        password: await hash('test1234', await genSalt()),
+      });
+      // await this.userRepo.createAll([admin], {transaction: tx});
       // await this.brandRepo.createAll(brands, {transaction: tx});
       // await this.categoryRepo.createAll(categories, {transaction: tx});
       // await this.tagRepo.createAll(tags, {transaction: tx});
