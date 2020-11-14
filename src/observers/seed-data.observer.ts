@@ -6,17 +6,14 @@ import {
 } from '@loopback/repository';
 import {genSalt, hash} from 'bcryptjs';
 import {DbDataSource} from '../datasources';
-import Brands from '../json/brands.json';
-import Categories from '../json/categories.json';
-import Products from '../json/products.json';
-import ProductTags from '../json/productTags.json';
-import Tags from '../json/tags.json';
+import {Brands, Categories, Products, ProductTags, Tags} from '../json';
 import {Brand, Category, Product, ProductTag, Tag, User} from '../models';
 import {
   BrandRepository,
   CategoryRepository,
   ProductRepository,
   ProductTagRepository,
+  SectionRepository,
   TagRepository,
   UserRepository,
 } from '../repositories';
@@ -38,6 +35,7 @@ export class SeedDataObserver implements LifeCycleObserver {
     @repository('CategoryRepository') private categoryRepo: CategoryRepository,
     @repository('ProductRepository') private productRepo: ProductRepository,
     @repository('UserRepository') private userRepo: UserRepository,
+    @repository('SectionRepository') private sectionRepo: SectionRepository,
     @repository('ProductTagRepository')
     private productTagRepo: ProductTagRepository,
 
@@ -110,8 +108,10 @@ export class SeedDataObserver implements LifeCycleObserver {
       });
       // await this.userRepo.createAll([admin], {transaction: tx});
       // await this.brandRepo.createAll(brands, {transaction: tx});
-      // await this.categoryRepo.createAll(categories, {transaction: tx});
+      // await this.sectionRepo.createAll(Sections, {transaction: tx});
       // await this.tagRepo.createAll(tags, {transaction: tx});
+
+      // await this.categoryRepo.createAll(categories, {transaction: tx});
       // await this.productRepo.createAll(products, {transaction: tx});
       // await this.productTagRepo.createAll(productTags, {transaction: tx});
       await tx.commit();

@@ -11,6 +11,7 @@ export async function migrate(args: string[]) {
     models: [
       'Brand',
       'Cart',
+      'Section',
       'Category',
       'Offer',
       'Product',

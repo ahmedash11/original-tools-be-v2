@@ -6,8 +6,9 @@ import {
   repository,
 } from '@loopback/repository';
 import {DbDataSource} from '../datasources';
-import {Category, CategoryRelations, Product} from '../models';
+import {Category, CategoryRelations, Product, Section} from '../models';
 import {ProductRepository} from './product.repository';
+import {SectionRepository} from './section.repository';
 
 export class CategoryRepository extends DefaultCrudRepository<
   Category,
@@ -29,14 +30,27 @@ export class CategoryRepository extends DefaultCrudRepository<
     typeof Category.prototype.id
   >;
 
+  public readonly section: BelongsToAccessor<
+    Section,
+    typeof Category.prototype.id
+  >;
+
   constructor(
     @inject('datasources.db') dataSource: DbDataSource,
     @repository.getter('ProductRepository')
     protected productRepositoryGetter: Getter<ProductRepository>,
     @repository.getter('CategoryRepository')
     protected categoryRepositoryGetter: Getter<CategoryRepository>,
+    @repository.getter('SectionRepository')
+    protected sectionRepositoryGetter: Getter<SectionRepository>,
   ) {
     super(Category, dataSource);
+
+    this.section = this.createBelongsToAccessorFor(
+      'section',
+      sectionRepositoryGetter,
+    );
+    this.registerInclusionResolver('section', this.section.inclusionResolver);
     this.subcategories = this.createHasManyRepositoryFactoryFor(
       'subcategories',
       Getter.fromValue(this),

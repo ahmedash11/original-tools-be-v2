@@ -13,3 +13,6 @@ export * from './product/product.controller';
 export * from './tag/tag.controller';
 export * from './type/type.controller';
 export * from './user/user.controller';
+export * from './section/section.controller';
+export * from './category/category-section.controller';
+export * from './section/section-category.controller';

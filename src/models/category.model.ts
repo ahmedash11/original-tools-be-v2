@@ -6,6 +6,7 @@ import {
   property,
 } from '@loopback/repository';
 import {Product} from './product.model';
+import {Section} from './section.model';
 
 @model({
   settings: {
@@ -15,6 +16,12 @@ import {Product} from './product.model';
         entity: 'Category',
         entityKey: 'id',
         foreignKey: 'parentId',
+      },
+      fk_category_sectionId: {
+        name: 'fk_category_sectionId',
+        entity: 'Section',
+        entityKey: 'id',
+        foreignKey: 'sectionId',
       },
     },
   },
@@ -35,7 +42,12 @@ export class Category extends Entity {
   @property({
     type: 'string',
   })
-  img: string;
+  slug: string;
+
+  @property({
+    type: 'string',
+  })
+  img?: string;
 
   @property({
     type: 'boolean',
@@ -51,6 +63,9 @@ export class Category extends Entity {
 
   @hasMany(() => Category, {keyTo: 'parentId'})
   subcategories: Category[];
+
+  @belongsTo(() => Section)
+  sectionId?: number;
 
   constructor(data?: Partial<Category>) {
     super(data);

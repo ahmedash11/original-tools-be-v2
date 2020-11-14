@@ -57,6 +57,11 @@ export class Product extends Entity {
   img?: string;
 
   @property({
+    type: 'string',
+  })
+  slug: string;
+
+  @property({
     type: 'number',
   })
   price: number;
