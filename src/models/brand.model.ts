@@ -5,8 +5,8 @@ import {Product} from './product.model';
 export class Brand extends Entity {
   @property({
     type: 'number',
+    generated: true,
     id: true,
-    // generated: true,
   })
   id: number;
 

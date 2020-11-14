@@ -5,8 +5,8 @@ import {Category} from './category.model';
 export class Section extends Entity {
   @property({
     type: 'number',
+    generated: true,
     id: true,
-    // generated: true,
   })
   id?: number;
 

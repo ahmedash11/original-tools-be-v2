@@ -6,8 +6,8 @@ import {Product} from './product.model';
 export class Tag extends Entity {
   @property({
     type: 'number',
+    generated: true,
     id: true,
-    // generated: true,
   })
   id?: number;
 

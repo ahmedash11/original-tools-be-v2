@@ -8,12 +8,14 @@ import {Entity, model, property} from '@loopback/repository';
         entity: 'Tag',
         entityKey: 'id',
         foreignKey: 'tagId',
+        onDelete: 'cascade',
       },
       fk_tag_productId: {
         name: 'fk_tag_productId',
         entity: 'Product',
         entityKey: 'id',
         foreignKey: 'productId',
+        onDelete: 'cascade',
       },
     },
   },
@@ -21,8 +23,8 @@ import {Entity, model, property} from '@loopback/repository';
 export class ProductTag extends Entity {
   @property({
     type: 'number',
+    generated: true,
     id: true,
-    // generated: true,
   })
   id: number;
 

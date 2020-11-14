@@ -167,4 +167,17 @@ export class BrandController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.brandRepository.deleteById(id);
   }
+
+  @del('/brands', {
+    responses: {
+      '204': {
+        description: 'Brand DELETE success',
+      },
+    },
+  })
+  async deleteByQuery(
+    @param.filter(Brand) where?: Where<Brand>,
+  ): Promise<Count> {
+    return this.brandRepository.deleteAll(where);
+  }
 }

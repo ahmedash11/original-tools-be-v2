@@ -16,12 +16,14 @@ import {Section} from './section.model';
         entity: 'Category',
         entityKey: 'id',
         foreignKey: 'parentId',
+        onDelete: 'cascade',
       },
       fk_category_sectionId: {
         name: 'fk_category_sectionId',
         entity: 'Section',
         entityKey: 'id',
         foreignKey: 'sectionId',
+        onDelete: 'cascade',
       },
     },
   },
@@ -29,8 +31,8 @@ import {Section} from './section.model';
 export class Category extends Entity {
   @property({
     type: 'number',
+    generated: true,
     id: true,
-    // generated: true,
   })
   id: number;
 

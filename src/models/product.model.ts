@@ -20,12 +20,14 @@ import {Type} from './type.model';
         entity: 'Brand',
         entityKey: 'id',
         foreignKey: 'brandId',
+        onDelete: 'cascade',
       },
       fk_product_categoryId: {
         name: 'fk_product_categoryId',
         entity: 'Category',
         entityKey: 'id',
         foreignKey: 'categoryId',
+        onDelete: 'cascade',
       },
     },
   },
@@ -33,8 +35,8 @@ import {Type} from './type.model';
 export class Product extends Entity {
   @property({
     type: 'number',
+    generated: true,
     id: true,
-    // generated: true,
   })
   id: number;
 
