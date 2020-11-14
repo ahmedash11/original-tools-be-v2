@@ -34,8 +34,8 @@ export class SeedDataObserver implements LifeCycleObserver {
     @repository('BrandRepository') private brandRepo: BrandRepository,
     @repository('CategoryRepository') private categoryRepo: CategoryRepository,
     @repository('ProductRepository') private productRepo: ProductRepository,
-    @repository('UserRepository') private userRepo: UserRepository,
     @repository('SectionRepository') private sectionRepo: SectionRepository,
+    @repository('UserRepository') private userRepo: UserRepository,
     @repository('ProductTagRepository')
     private productTagRepo: ProductTagRepository,
 

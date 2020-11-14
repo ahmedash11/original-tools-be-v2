@@ -45,7 +45,6 @@ export class CategoryRepository extends DefaultCrudRepository<
     protected sectionRepositoryGetter: Getter<SectionRepository>,
   ) {
     super(Category, dataSource);
-
     this.section = this.createBelongsToAccessorFor(
       'section',
       sectionRepositoryGetter,

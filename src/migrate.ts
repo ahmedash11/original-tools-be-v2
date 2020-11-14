@@ -1,10 +1,10 @@
-import {EtoolsApp} from './application';
+import {TestApp} from './application';
 
 export async function migrate(args: string[]) {
   const existingSchema = args.includes('--rebuild') ? 'drop' : 'alter';
   console.log('Migrating schemas (%s existing schema)', existingSchema);
 
-  const app = new EtoolsApp();
+  const app = new TestApp();
   await app.boot();
   await app.migrateSchema({
     existingSchema,
