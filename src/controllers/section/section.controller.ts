@@ -7,13 +7,13 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
 } from '@loopback/rest';
 import {Section} from '../../models';
@@ -22,7 +22,7 @@ import {SectionRepository} from '../../repositories';
 export class SectionController {
   constructor(
     @repository(SectionRepository)
-    public sectionRepository : SectionRepository,
+    public sectionRepository: SectionRepository,
   ) {}
 
   @post('/sections', {
@@ -57,9 +57,7 @@ export class SectionController {
       },
     },
   })
-  async count(
-    @param.where(Section) where?: Where<Section>,
-  ): Promise<Count> {
+  async count(@param.where(Section) where?: Where<Section>): Promise<Count> {
     return this.sectionRepository.count(where);
   }
 
@@ -106,7 +104,7 @@ export class SectionController {
     return this.sectionRepository.updateAll(section, where);
   }
 
-  @get('/sections/{id}', {
+  @get('/sections/{slug}', {
     responses: {
       '200': {
         description: 'Section model instance',
@@ -118,22 +116,28 @@ export class SectionController {
       },
     },
   })
-  async findById(
-    @param.path.number('id') id: number,
-    @param.filter(Section, {exclude: 'where'}) filter?: FilterExcludingWhere<Section>
-  ): Promise<Section> {
-    return this.sectionRepository.findById(id, filter);
+  async findBySlug(
+    @param.path.string('slug') slug: string,
+    @param.filter(Section, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Section>,
+  ): Promise<Section | null> {
+    return this.sectionRepository.findOne({
+      where: {
+        slug: slug,
+      },
+      ...filter,
+    });
   }
 
-  @patch('/sections/{id}', {
+  @patch('/sections/{slug}', {
     responses: {
       '204': {
         description: 'Section PATCH success',
       },
     },
   })
-  async updateById(
-    @param.path.number('id') id: number,
+  async updateBySlug(
+    @param.path.string('slug') slug: string,
     @requestBody({
       content: {
         'application/json': {
@@ -143,8 +147,62 @@ export class SectionController {
     })
     section: Section,
   ): Promise<void> {
-    await this.sectionRepository.updateById(id, section);
+    await this.sectionRepository.updateAll(section, {slug: slug});
   }
+
+  @del('/sections/{slug}', {
+    responses: {
+      '204': {
+        description: 'Section DELETE success',
+      },
+    },
+  })
+  async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
+    await this.sectionRepository.deleteAll({
+      slug: slug,
+    });
+  }
+
+  // @get('/sections/{id}', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Section model instance',
+  //       content: {
+  //         'application/json': {
+  //           schema: getModelSchemaRef(Section, {includeRelations: true}),
+  //         },
+  //       },
+  //     },
+  //   },
+  // })
+  // async findById(
+  //   @param.path.number('id') id: number,
+  //   @param.filter(Section, {exclude: 'where'})
+  //   filter?: FilterExcludingWhere<Section>,
+  // ): Promise<Section> {
+  //   return this.sectionRepository.findById(id, filter);
+  // }
+
+  // @patch('/sections/{id}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Section PATCH success',
+  //     },
+  //   },
+  // })
+  // async updateById(
+  //   @param.path.number('id') id: number,
+  //   @requestBody({
+  //     content: {
+  //       'application/json': {
+  //         schema: getModelSchemaRef(Section, {partial: true}),
+  //       },
+  //     },
+  //   })
+  //   section: Section,
+  // ): Promise<void> {
+  //   await this.sectionRepository.updateById(id, section);
+  // }
 
   @put('/sections/{id}', {
     responses: {
@@ -160,14 +218,14 @@ export class SectionController {
     await this.sectionRepository.replaceById(id, section);
   }
 
-  @del('/sections/{id}', {
-    responses: {
-      '204': {
-        description: 'Section DELETE success',
-      },
-    },
-  })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.sectionRepository.deleteById(id);
-  }
+  // @del('/sections/{id}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Section DELETE success',
+  //     },
+  //   },
+  // })
+  // async deleteById(@param.path.number('id') id: number): Promise<void> {
+  //   await this.sectionRepository.deleteById(id);
+  // }
 }

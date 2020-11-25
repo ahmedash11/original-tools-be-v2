@@ -104,7 +104,7 @@ export class ProductController {
     return this.productRepository.updateAll(product, where);
   }
 
-  @get('/products/{id}', {
+  @get('/products/{slug}', {
     responses: {
       '200': {
         description: 'Product model instance',
@@ -116,23 +116,28 @@ export class ProductController {
       },
     },
   })
-  async findById(
-    @param.path.number('id') id: number,
+  async findBySlug(
+    @param.path.string('slug') slug: string,
     @param.filter(Product, {exclude: 'where'})
     filter?: FilterExcludingWhere<Product>,
-  ): Promise<Product> {
-    return this.productRepository.findById(id, filter);
+  ): Promise<Product | null> {
+    return this.productRepository.findOne({
+      where: {
+        slug: slug,
+      },
+      ...filter,
+    });
   }
 
-  @patch('/products/{id}', {
+  @patch('/products/{slug}', {
     responses: {
       '204': {
         description: 'Product PATCH success',
       },
     },
   })
-  async updateById(
-    @param.path.number('id') id: number,
+  async updateBySlug(
+    @param.path.string('slug') slug: string,
     @requestBody({
       content: {
         'application/json': {
@@ -142,8 +147,62 @@ export class ProductController {
     })
     product: Product,
   ): Promise<void> {
-    await this.productRepository.updateById(id, product);
+    await this.productRepository.updateAll(product, {slug: slug});
   }
+
+  @del('/products/{slug}', {
+    responses: {
+      '204': {
+        description: 'Product DELETE success',
+      },
+    },
+  })
+  async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
+    await this.productRepository.deleteAll({
+      slug: slug,
+    });
+  }
+
+  // @get('/products/{id}', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Product model instance',
+  //       content: {
+  //         'application/json': {
+  //           schema: getModelSchemaRef(Product, {includeRelations: true}),
+  //         },
+  //       },
+  //     },
+  //   },
+  // })
+  // async findById(
+  //   @param.path.number('id') id: number,
+  //   @param.filter(Product, {exclude: 'where'})
+  //   filter?: FilterExcludingWhere<Product>,
+  // ): Promise<Product> {
+  //   return this.productRepository.findById(id, filter);
+  // }
+
+  // @patch('/products/{id}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Product PATCH success',
+  //     },
+  //   },
+  // })
+  // async updateById(
+  //   @param.path.number('id') id: number,
+  //   @requestBody({
+  //     content: {
+  //       'application/json': {
+  //         schema: getModelSchemaRef(Product, {partial: true}),
+  //       },
+  //     },
+  //   })
+  //   product: Product,
+  // ): Promise<void> {
+  //   await this.productRepository.updateById(id, product);
+  // }
 
   @put('/products/{id}', {
     responses: {
@@ -159,14 +218,14 @@ export class ProductController {
     await this.productRepository.replaceById(id, product);
   }
 
-  @del('/products/{id}', {
-    responses: {
-      '204': {
-        description: 'Product DELETE success',
-      },
-    },
-  })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.productRepository.deleteById(id);
-  }
+  // @del('/products/{id}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Product DELETE success',
+  //     },
+  //   },
+  // })
+  // async deleteById(@param.path.number('id') id: number): Promise<void> {
+  //   await this.productRepository.deleteById(id);
+  // }
 }

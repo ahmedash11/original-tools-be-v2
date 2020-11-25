@@ -13,7 +13,6 @@ import {
   param,
   patch,
   post,
-  put,
   requestBody,
 } from '@loopback/rest';
 import {Category} from '../../models';
@@ -104,7 +103,7 @@ export class CategoryController {
     return this.categoryRepository.updateAll(category, where);
   }
 
-  @get('/categories/{id}', {
+  @get('/categories/{slug}', {
     responses: {
       '200': {
         description: 'Category model instance',
@@ -116,23 +115,28 @@ export class CategoryController {
       },
     },
   })
-  async findById(
-    @param.path.number('id') id: number,
+  async findBySlug(
+    @param.path.string('slug') slug: string,
     @param.filter(Category, {exclude: 'where'})
     filter?: FilterExcludingWhere<Category>,
-  ): Promise<Category> {
-    return this.categoryRepository.findById(id, filter);
+  ): Promise<Category | null> {
+    return this.categoryRepository.findOne({
+      where: {
+        slug: slug,
+      },
+      ...filter,
+    });
   }
 
-  @patch('/categories/{id}', {
+  @patch('/categories/{slug}', {
     responses: {
       '204': {
         description: 'Category PATCH success',
       },
     },
   })
-  async updateById(
-    @param.path.number('id') id: number,
+  async updateBySlug(
+    @param.path.string('slug') slug: string,
     @requestBody({
       content: {
         'application/json': {
@@ -142,22 +146,76 @@ export class CategoryController {
     })
     category: Category,
   ): Promise<void> {
-    await this.categoryRepository.updateById(id, category);
+    await this.categoryRepository.updateAll(category, {slug: slug});
   }
 
-  @put('/categories/{id}', {
+  @del('/categories/{slug}', {
     responses: {
       '204': {
-        description: 'Category PUT success',
+        description: 'Category DELETE success',
       },
     },
   })
-  async replaceById(
-    @param.path.number('id') id: number,
-    @requestBody() category: Category,
-  ): Promise<void> {
-    await this.categoryRepository.replaceById(id, category);
+  async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
+    await this.categoryRepository.deleteAll({
+      slug: slug,
+    });
   }
+
+  // @get('/categories/{id}', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Category model instance',
+  //       content: {
+  //         'application/json': {
+  //           schema: getModelSchemaRef(Category, {includeRelations: true}),
+  //         },
+  //       },
+  //     },
+  //   },
+  // })
+  // async findById(
+  //   @param.path.number('id') id: number,
+  //   @param.filter(Category, {exclude: 'where'})
+  //   filter?: FilterExcludingWhere<Category>,
+  // ): Promise<Category> {
+  //   return this.categoryRepository.findById(id, filter);
+  // }
+
+  // @patch('/categories/{id}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Category PATCH success',
+  //     },
+  //   },
+  // })
+  // async updateById(
+  //   @param.path.number('id') id: number,
+  //   @requestBody({
+  //     content: {
+  //       'application/json': {
+  //         schema: getModelSchemaRef(Category, {partial: true}),
+  //       },
+  //     },
+  //   })
+  //   category: Category,
+  // ): Promise<void> {
+  //   await this.categoryRepository.updateById(id, category);
+  // }
+
+  // @put('/categories/{id}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Category PUT success',
+  //     },
+  //   },
+  // })
+  // async replaceById(
+  //   @param.path.number('id') id: number,
+  //   @requestBody() category: Category,
+  // ): Promise<void> {
+  //   await this.categoryRepository.replaceById(id, category);
+  // }
 
   @del('/categories/{id}', {
     responses: {

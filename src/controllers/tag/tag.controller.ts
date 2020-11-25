@@ -102,7 +102,7 @@ export class TagController {
     return this.tagRepository.updateAll(tag, where);
   }
 
-  @get('/tags/{id}', {
+  @get('/tags/{slug}', {
     responses: {
       '200': {
         description: 'Tag model instance',
@@ -114,22 +114,28 @@ export class TagController {
       },
     },
   })
-  async findById(
-    @param.path.number('id') id: number,
-    @param.filter(Tag, {exclude: 'where'}) filter?: FilterExcludingWhere<Tag>,
-  ): Promise<Tag> {
-    return this.tagRepository.findById(id, filter);
+  async findBySlug(
+    @param.path.string('slug') slug: string,
+    @param.filter(Tag, {exclude: 'where'})
+    filter?: FilterExcludingWhere<Tag>,
+  ): Promise<Tag | null> {
+    return this.tagRepository.findOne({
+      where: {
+        slug: slug,
+      },
+      ...filter,
+    });
   }
 
-  @patch('/tags/{id}', {
+  @patch('/tags/{slug}', {
     responses: {
       '204': {
         description: 'Tag PATCH success',
       },
     },
   })
-  async updateById(
-    @param.path.number('id') id: number,
+  async updateBySlug(
+    @param.path.string('slug') slug: string,
     @requestBody({
       content: {
         'application/json': {
@@ -139,8 +145,61 @@ export class TagController {
     })
     tag: Tag,
   ): Promise<void> {
-    await this.tagRepository.updateById(id, tag);
+    await this.tagRepository.updateAll(tag, {slug: slug});
   }
+
+  @del('/tags/{slug}', {
+    responses: {
+      '204': {
+        description: 'Tag DELETE success',
+      },
+    },
+  })
+  async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
+    await this.tagRepository.deleteAll({
+      slug: slug,
+    });
+  }
+
+  // @get('/tags/{id}', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Tag model instance',
+  //       content: {
+  //         'application/json': {
+  //           schema: getModelSchemaRef(Tag, {includeRelations: true}),
+  //         },
+  //       },
+  //     },
+  //   },
+  // })
+  // async findById(
+  //   @param.path.number('id') id: number,
+  //   @param.filter(Tag, {exclude: 'where'}) filter?: FilterExcludingWhere<Tag>,
+  // ): Promise<Tag> {
+  //   return this.tagRepository.findById(id, filter);
+  // }
+
+  // @patch('/tags/{id}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Tag PATCH success',
+  //     },
+  //   },
+  // })
+  // async updateById(
+  //   @param.path.number('id') id: number,
+  //   @requestBody({
+  //     content: {
+  //       'application/json': {
+  //         schema: getModelSchemaRef(Tag, {partial: true}),
+  //       },
+  //     },
+  //   })
+  //   tag: Tag,
+  // ): Promise<void> {
+  //   await this.tagRepository.updateById(id, tag);
+  // }
 
   @put('/tags/{id}', {
     responses: {
@@ -156,14 +215,14 @@ export class TagController {
     await this.tagRepository.replaceById(id, tag);
   }
 
-  @del('/tags/{id}', {
-    responses: {
-      '204': {
-        description: 'Tag DELETE success',
-      },
-    },
-  })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.tagRepository.deleteById(id);
-  }
+  // @del('/tags/{id}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Tag DELETE success',
+  //     },
+  //   },
+  // })
+  // async deleteById(@param.path.number('id') id: number): Promise<void> {
+  //   await this.tagRepository.deleteById(id);
+  // }
 }
