@@ -58,6 +58,7 @@ export class SeedDataObserver implements LifeCycleObserver {
             title: x.title,
             img: x.img,
             order: x.order,
+            slug: x.slug,
           }),
       );
       const categories = Categories.map(
@@ -65,6 +66,7 @@ export class SeedDataObserver implements LifeCycleObserver {
           new Category({
             id: x.id,
             title: x.title,
+            slug: x.slug,
             parentId: x.parentId == null ? undefined : x.parentId,
             img: x.img,
           }),
@@ -77,6 +79,11 @@ export class SeedDataObserver implements LifeCycleObserver {
             description: x.description,
             img: x.img,
             price: x.price,
+            techInfo: x.techInfo,
+            content: x.content,
+            slug: x.slug,
+            url: x.url,
+            addings: x.addings,
             cost: x.cost,
             quantity: x.quantity,
             categoryId: x.categoryId,
@@ -90,6 +97,7 @@ export class SeedDataObserver implements LifeCycleObserver {
           new Tag({
             id: x.id,
             title: x.title,
+            slug: x.slug,
             active: true,
           }),
       );

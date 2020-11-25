@@ -6,10 +6,12 @@ export const Brands = [
       'http://etoolsshop.com/uploads/images/brands/http://etoolsshop.com/uploads/images/brands/bosch-home-diy-1571168827.png',
     order: 1,
     active: true,
+    slug: 'bosch-home-diy',
   },
   {
     id: 2,
     title: 'ستانلى - STANLEY ',
+    slug: 'ستانلى-stanley-',
     img:
       'http://etoolsshop.com/uploads/images/brands/ستانلى-stanley--1567186232.png',
     order: 3,
@@ -18,6 +20,7 @@ export const Brands = [
   {
     id: 3,
     title: ' سكيل - SKIL',
+    slug: '-سكيل-skil',
     img:
       'http://etoolsshop.com/uploads/images/brands/-سكيل-skil-1567186355.png',
     order: 2,
@@ -26,6 +29,7 @@ export const Brands = [
   {
     id: 4,
     title: 'بوش الاحترافي - BOSCH PROFESSIONAL',
+    slug: 'بوش-الاحترافي-bosch-professional',
     img:
       'http://etoolsshop.com/uploads/images/brands/بوش-الاحترافي-bosch-professional-1571168865.png',
     order: 0,
@@ -34,6 +38,7 @@ export const Brands = [
   {
     id: 5,
     title: 'دريميل - DREMEL',
+    slug: 'دريميل-dremel',
     img:
       'http://etoolsshop.com/uploads/images/brands/دريميل-dremel-1567186386.png',
     order: 5,
@@ -42,6 +47,7 @@ export const Brands = [
   {
     id: 6,
     title: ' كلابر - CLABER',
+    slug: '-كلابر-claber',
     img:
       'http://etoolsshop.com/uploads/images/brands/-كلابر-claber-1576405321.png',
     order: 6,
@@ -50,6 +56,7 @@ export const Brands = [
   {
     id: 7,
     title: 'ماكيتا - MAKITA',
+    slug: 'ماكيتا-makita',
     img:
       'http://etoolsshop.com/uploads/images/brands/ماكيتا-makita-1579610395.png',
     order: 7,
@@ -58,6 +65,7 @@ export const Brands = [
   {
     id: 8,
     title: 'بلاك بلس ديكر - BLACK + DECKER',
+    slug: 'بلاك-بلس-ديكر-black-+-decker',
     img:
       'http://etoolsshop.com/uploads/images/brands/بلاك-بلس-ديكر-black-+-decker-1571568461.png',
     order: 8,
@@ -66,6 +74,7 @@ export const Brands = [
   {
     id: 9,
     title: 'ميتابو - METABO ',
+    slug: 'ميتابو-metabo-',
     img: 'http://etoolsshop.com/uploads/images/brands/metabo.png',
     order: 9,
     active: true,
@@ -73,6 +82,7 @@ export const Brands = [
   {
     id: 10,
     title: 'فيرم - FERM',
+    slug: 'فيرم-ferm',
     img: 'http://etoolsshop.com/uploads/images/brands/Ferm1.png',
     order: 10,
     active: true,
@@ -80,6 +90,7 @@ export const Brands = [
   {
     id: 11,
     title: 'انكو - INGCO',
+    slug: 'انكو-ingco',
     img:
       'http://etoolsshop.com/uploads/images/brands/انكو-ingco-1567186444.png',
     order: 12,
@@ -88,6 +99,7 @@ export const Brands = [
   {
     id: 12,
     title: 'هيلتى - HILTI',
+    slug: 'هيلتى-hilti',
     img: 'http://etoolsshop.com/uploads/images/brands/Hilti22.png',
     order: 4,
     active: true,
@@ -95,6 +107,7 @@ export const Brands = [
   {
     id: 13,
     title: 'ديولت - DEWALT',
+    slug: 'ديولت-dewalt',
     img: 'http://etoolsshop.com/uploads/images/brands/dewalt2.png',
     order: 14,
     active: true,
@@ -102,6 +115,7 @@ export const Brands = [
   {
     id: 14,
     title: 'يونيور - UNIOR',
+    slug: 'يونيور-unior',
     img:
       'http://etoolsshop.com/uploads/images/brands/يونيور-unior-1576501374.png',
     order: 16,
@@ -110,6 +124,7 @@ export const Brands = [
   {
     id: 15,
     title: 'ميلواكى  - MILWAUKEE ',
+    slug: 'ميلواكى-milwaukee-',
     img: 'http://etoolsshop.com/uploads/images/brands/mil.png',
     order: 18,
     active: true,
@@ -117,6 +132,7 @@ export const Brands = [
   {
     id: 16,
     title: ' فرويد - FREUD ',
+    slug: '-فرويد-freud-',
     img: 'http://etoolsshop.com/uploads/images/brands/freud12345.png',
     order: 17,
     active: true,
@@ -124,6 +140,7 @@ export const Brands = [
   {
     id: 17,
     title: 'متنوع - VARIETY',
+    slug: 'متنوع-variety',
     img: 'http://etoolsshop.com/uploads/images/brands/',
     order: 20,
     active: true,
@@ -131,13 +148,15 @@ export const Brands = [
   {
     id: 18,
     title: 'بروكسون - PROXXON',
-    img: 'http://etoolsshop.com/uploads/images/brands/FESTOLbrandLogo2 (2).jpg',
+    slug: 'بروكسون-proxxon',
+    img: 'http://etoolsshop.com/uploads/images/brands/FESTOLbrandLogo2%(2).jpg',
     order: 15,
     active: true,
   },
   {
     id: 19,
     title: 'دى دبليو تى - DWT',
+    slug: 'دى-دبليو-تى-dwt',
     img:
       'http://etoolsshop.com/uploads/images/brands/دى-دبليو-تى-dwt-1571568283.png',
     order: 13,
@@ -146,27 +165,32 @@ export const Brands = [
   {
     id: 20,
     title: ' فيستول - FESTOOL',
-    img: 'http://etoolsshop.com/uploads/images/brands/FESTOLbrandLogo2 (1).jpg',
+    slug: '-فيستول-festool',
+    img: 'http://etoolsshop.com/uploads/images/brands/FESTOLbrandLogo2%(1).jpg',
     order: 11,
     active: true,
   },
   {
     id: 22,
     title: 'توب تول  - TOPTUL',
-    img: 'http://etoolsshop.com/uploads/images/brands/FESTOLbrandLogo2 (3).jpg',
+    slug: 'توب-تول-toptul',
+    img:
+      'http://etoolsshop.com/uploads/images/brands/FESTOLbrandLogo2%20(3).jpg',
     order: 19,
     active: true,
   },
   {
     id: 23,
     title: 'ماكس - MAX',
-    img: 'http://etoolsshop.com/uploads/images/brands/max- logo2018.png',
+    slug: 'ماكس-max',
+    img: 'http://etoolsshop.com/uploads/images/brands/max-%20logo2018.png',
     order: 21,
     active: true,
   },
   {
     id: 24,
     title: 'كراون - CROWN',
+    slug: 'كراون-crown',
     img:
       'http://etoolsshop.com/uploads/images/brands/كراون-crown-1571568006.png',
     order: 22,
@@ -175,6 +199,7 @@ export const Brands = [
   {
     id: 25,
     title: 'روبى - RUBI',
+    slug: 'روبى-rubi',
     img: 'http://etoolsshop.com/uploads/images/brands/RUBI00.png',
     order: 23,
     active: true,
@@ -182,6 +207,7 @@ export const Brands = [
   {
     id: 26,
     title: 'توتال - TOTAL',
+    slug: 'توتال-total',
     img:
       'http://etoolsshop.com/uploads/images/brands/توتال-total-1567186499.png',
     order: 24,
@@ -190,6 +216,7 @@ export const Brands = [
   {
     id: 27,
     title: 'أي بى تى - APT',
+    slug: 'أي-بى-تى-apt',
     img:
       'http://etoolsshop.com/uploads/images/brands/أي-بى-تى-apt-1567186513.png',
     order: 25,
@@ -198,6 +225,7 @@ export const Brands = [
   {
     id: 28,
     title: 'ام بي تي',
+    slug: 'ام-بي-تي',
     img: 'http://etoolsshop.com/uploads/images/brands/ام-بي-تي-1574590280.jpg',
     order: 26,
     active: true,
@@ -205,6 +233,7 @@ export const Brands = [
   {
     id: 29,
     title: 'لايكا - Leica',
+    slug: 'لايكا-leica',
     img:
       'http://etoolsshop.com/uploads/images/brands/لايكا-leica-1576142623.jpg',
     order: 7,
@@ -213,6 +242,7 @@ export const Brands = [
   {
     id: 30,
     title: 'سندواى - SNDWAY',
+    slug: 'سندواى-sndway',
     img:
       'http://etoolsshop.com/uploads/images/brands/سندواى-sndway-1576428541.png',
     order: 9,
@@ -221,6 +251,7 @@ export const Brands = [
   {
     id: 31,
     title: 'هيكوكى - HIKOKI',
+    slug: 'هيكوكى-hikoki',
     img:
       'http://etoolsshop.com/uploads/images/brands/هيكوكى-hikoki-1581435509.jpg',
     order: 10,
@@ -229,6 +260,7 @@ export const Brands = [
   {
     id: 32,
     title: ' يونى تى - UNI-T',
+    slug: '-يونى-تى-uni-t',
     img:
       'http://etoolsshop.com/uploads/images/brands/-يونى-تى-uni-t-1592213585.jpg',
     order: 11,

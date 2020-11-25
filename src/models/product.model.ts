@@ -64,6 +64,35 @@ export class Product extends Entity {
   slug: string;
 
   @property({
+    type: 'string',
+    mysql: {
+      dataType: 'LONGTEXT',
+    },
+  })
+  content?: string;
+
+  @property({
+    type: 'string',
+    mysql: {
+      dataType: 'LONGTEXT',
+    },
+  })
+  techInfo?: string;
+
+  @property({
+    type: 'string',
+  })
+  url?: string;
+
+  @property({
+    type: 'string',
+    mysql: {
+      dataType: 'LONGTEXT',
+    },
+  })
+  addings?: string;
+
+  @property({
     type: 'number',
   })
   price: number;
@@ -95,6 +124,12 @@ export class Product extends Entity {
     default: false,
   })
   landing?: boolean;
+
+  @property({
+    type: 'boolean',
+    default: true,
+  })
+  available?: boolean;
 
   @property({
     type: 'boolean',

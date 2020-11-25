@@ -21,6 +21,11 @@ export class Tag extends Entity {
   })
   active?: boolean;
 
+  @property({
+    type: 'string',
+  })
+  slug: string;
+
   @hasMany(() => Product, {through: {model: () => ProductTag}})
   products: Product[];
 

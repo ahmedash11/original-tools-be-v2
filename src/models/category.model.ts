@@ -57,6 +57,12 @@ export class Category extends Entity {
   })
   active?: boolean;
 
+  @property({
+    type: 'number',
+    default: 0,
+  })
+  order: string;
+
   @hasMany(() => Product)
   products: Product[];
 

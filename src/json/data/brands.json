@@ -122,7 +122,7 @@
 		"id" : 18,
 		"title" : "بروكسون - PROXXON",
 		"slug" : "بروكسون-proxxon",
-		"img" : "http://etoolsshop.com/uploads/images/brands/FESTOLbrandLogo2 (2).jpg",
+		"img" : "http://etoolsshop.com/uploads/images/brands/FESTOLbrandLogo2%(2).jpg",
 		"order" : 15,
 		"active" : true	},
 	{
@@ -136,21 +136,21 @@
 		"id" : 20,
 		"title" : " فيستول - FESTOOL",
 		"slug" : "-فيستول-festool",
-		"img" : "http://etoolsshop.com/uploads/images/brands/FESTOLbrandLogo2 (1).jpg",
+		"img" : "http://etoolsshop.com/uploads/images/brands/FESTOLbrandLogo2%(1).jpg",
 		"order" : 11,
 		"active" : true	},
 	{
 		"id" : 22,
 		"title" : "توب تول  - TOPTUL",
 		"slug" : "توب-تول-toptul",
-		"img" : "http://etoolsshop.com/uploads/images/brands/FESTOLbrandLogo2 (3).jpg",
+		"img" : "http://etoolsshop.com/uploads/images/brands/FESTOLbrandLogo2%20(3).jpg",
 		"order" : 19,
 		"active" : true	},
 	{
 		"id" : 23,
 		"title" : "ماكس - MAX",
 		"slug" : "ماكس-max",
-		"img" : "http://etoolsshop.com/uploads/images/brands/max- logo2018.png",
+		"img" : "http://etoolsshop.com/uploads/images/brands/max-%20logo2018.png",
 		"order" : 21,
 		"active" : true	},
 	{
