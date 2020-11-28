@@ -1,11 +1,13 @@
+import {AuthenticationComponent} from '@loopback/authentication';
+import {JWTAuthenticationComponent} from '@loopback/authentication-jwt';
 import {BootMixin} from '@loopback/boot';
 import {ApplicationConfig} from '@loopback/core';
+import {RepositoryMixin} from '@loopback/repository';
+import {RestApplication} from '@loopback/rest';
 import {
   RestExplorerBindings,
   RestExplorerComponent,
 } from '@loopback/rest-explorer';
-import {RepositoryMixin} from '@loopback/repository';
-import {RestApplication} from '@loopback/rest';
 import {ServiceMixin} from '@loopback/service-proxy';
 import path from 'path';
 import {MySequence} from './sequence';
@@ -29,6 +31,10 @@ export class TestApp extends BootMixin(
       path: '/explorer',
     });
     this.component(RestExplorerComponent);
+
+    this.component(AuthenticationComponent);
+    // Mount jwt component
+    this.component(JWTAuthenticationComponent);
 
     this.projectRoot = __dirname;
     // Customize @loopback/boot Booter Conventions here
