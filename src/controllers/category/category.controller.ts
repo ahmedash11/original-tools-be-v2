@@ -13,6 +13,7 @@ import {
   param,
   patch,
   post,
+  put,
   requestBody,
 } from '@loopback/rest';
 import {Category} from '../../models';
@@ -128,26 +129,26 @@ export class CategoryController {
     });
   }
 
-  @patch('/categories/{slug}', {
-    responses: {
-      '204': {
-        description: 'Category PATCH success',
-      },
-    },
-  })
-  async updateBySlug(
-    @param.path.string('slug') slug: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Category, {partial: true}),
-        },
-      },
-    })
-    category: Category,
-  ): Promise<void> {
-    await this.categoryRepository.updateAll(category, {slug: slug});
-  }
+  // @patch('/categories/{slug}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Category PATCH success',
+  //     },
+  //   },
+  // })
+  // async updateBySlug(
+  //   @param.path.string('slug') slug: string,
+  //   @requestBody({
+  //     content: {
+  //       'application/json': {
+  //         schema: getModelSchemaRef(Category, {partial: true}),
+  //       },
+  //     },
+  //   })
+  //   category: Category,
+  // ): Promise<void> {
+  //   await this.categoryRepository.updateAll(category, {slug: slug});
+  // }
 
   @del('/categories/{slug}', {
     responses: {
@@ -182,40 +183,40 @@ export class CategoryController {
   //   return this.categoryRepository.findById(id, filter);
   // }
 
-  // @patch('/categories/{id}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Category PATCH success',
-  //     },
-  //   },
-  // })
-  // async updateById(
-  //   @param.path.number('id') id: number,
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(Category, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   category: Category,
-  // ): Promise<void> {
-  //   await this.categoryRepository.updateById(id, category);
-  // }
+  @patch('/categories/{id}', {
+    responses: {
+      '204': {
+        description: 'Category PATCH success',
+      },
+    },
+  })
+  async updateById(
+    @param.path.number('id') id: number,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Category, {partial: true}),
+        },
+      },
+    })
+    category: Category,
+  ): Promise<void> {
+    await this.categoryRepository.updateById(id, category);
+  }
 
-  // @put('/categories/{id}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Category PUT success',
-  //     },
-  //   },
-  // })
-  // async replaceById(
-  //   @param.path.number('id') id: number,
-  //   @requestBody() category: Category,
-  // ): Promise<void> {
-  //   await this.categoryRepository.replaceById(id, category);
-  // }
+  @put('/categories/{id}', {
+    responses: {
+      '204': {
+        description: 'Category PUT success',
+      },
+    },
+  })
+  async replaceById(
+    @param.path.number('id') id: number,
+    @requestBody() category: Category,
+  ): Promise<void> {
+    await this.categoryRepository.replaceById(id, category);
+  }
 
   @del('/categories/{id}', {
     responses: {

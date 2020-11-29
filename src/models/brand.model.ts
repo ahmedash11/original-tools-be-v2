@@ -18,7 +18,23 @@ export class Brand extends Entity {
   @property({
     type: 'string',
   })
+  meta_title: string;
+
+  @property({
+    type: 'string',
+    mysql: {
+      dataType: 'LONGTEXT',
+    },
+  })
   description?: string;
+
+  @property({
+    type: 'string',
+    mysql: {
+      dataType: 'LONGTEXT',
+    },
+  })
+  meta_description?: string;
 
   @property({
     type: 'string',

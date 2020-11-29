@@ -127,39 +127,39 @@ export class TagController {
     });
   }
 
-  @patch('/tags/{slug}', {
-    responses: {
-      '204': {
-        description: 'Tag PATCH success',
-      },
-    },
-  })
-  async updateBySlug(
-    @param.path.string('slug') slug: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Tag, {partial: true}),
-        },
-      },
-    })
-    tag: Tag,
-  ): Promise<void> {
-    await this.tagRepository.updateAll(tag, {slug: slug});
-  }
+  // @patch('/tags/{slug}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Tag PATCH success',
+  //     },
+  //   },
+  // })
+  // async updateBySlug(
+  //   @param.path.string('slug') slug: string,
+  //   @requestBody({
+  //     content: {
+  //       'application/json': {
+  //         schema: getModelSchemaRef(Tag, {partial: true}),
+  //       },
+  //     },
+  //   })
+  //   tag: Tag,
+  // ): Promise<void> {
+  //   await this.tagRepository.updateAll(tag, {slug: slug});
+  // }
 
-  @del('/tags/{slug}', {
-    responses: {
-      '204': {
-        description: 'Tag DELETE success',
-      },
-    },
-  })
-  async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
-    await this.tagRepository.deleteAll({
-      slug: slug,
-    });
-  }
+  // @del('/tags/{slug}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Tag DELETE success',
+  //     },
+  //   },
+  // })
+  // async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
+  //   await this.tagRepository.deleteAll({
+  //     slug: slug,
+  //   });
+  // }
 
   // @get('/tags/{id}', {
   //   responses: {
@@ -180,26 +180,32 @@ export class TagController {
   //   return this.tagRepository.findById(id, filter);
   // }
 
-  // @patch('/tags/{id}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Tag PATCH success',
-  //     },
-  //   },
-  // })
-  // async updateById(
-  //   @param.path.number('id') id: number,
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(Tag, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   tag: Tag,
-  // ): Promise<void> {
-  //   await this.tagRepository.updateById(id, tag);
-  // }
+  @patch('/tags/{id}', {
+    responses: {
+      '200': {
+        description: 'Tag model instance',
+        content: {
+          'application/json': {
+            schema: getModelSchemaRef(Tag, {includeRelations: true}),
+          },
+        },
+      },
+    },
+  })
+  async updateById(
+    @param.path.number('id') id: number,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Tag, {partial: true}),
+        },
+      },
+    })
+    tag: Tag,
+  ): Promise<Tag> {
+    await this.tagRepository.updateById(id, tag);
+    return this.tagRepository.findById(id);
+  }
 
   @put('/tags/{id}', {
     responses: {
@@ -215,14 +221,14 @@ export class TagController {
     await this.tagRepository.replaceById(id, tag);
   }
 
-  // @del('/tags/{id}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Tag DELETE success',
-  //     },
-  //   },
-  // })
-  // async deleteById(@param.path.number('id') id: number): Promise<void> {
-  //   await this.tagRepository.deleteById(id);
-  // }
+  @del('/tags/{id}', {
+    responses: {
+      '204': {
+        description: 'Tag DELETE success',
+      },
+    },
+  })
+  async deleteById(@param.path.number('id') id: number): Promise<void> {
+    await this.tagRepository.deleteById(id);
+  }
 }

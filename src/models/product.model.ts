@@ -20,14 +20,14 @@ import {Type} from './type.model';
         entity: 'Brand',
         entityKey: 'id',
         foreignKey: 'brandId',
-        onDelete: 'cascade',
+        onDelete: 'restrict',
       },
       fk_product_categoryId: {
         name: 'fk_product_categoryId',
         entity: 'Category',
         entityKey: 'id',
         foreignKey: 'categoryId',
-        onDelete: 'cascade',
+        onDelete: 'restrict',
       },
     },
   },
@@ -83,6 +83,19 @@ export class Product extends Entity {
     type: 'string',
   })
   url?: string;
+
+  @property({
+    type: 'string',
+  })
+  meta_title?: string;
+
+  @property({
+    type: 'string',
+    mysql: {
+      dataType: 'LONGTEXT',
+    },
+  })
+  meta_description?: string;
 
   @property({
     type: 'string',

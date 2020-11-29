@@ -6,7 +6,14 @@ import {
 } from '@loopback/repository';
 import {genSalt, hash} from 'bcryptjs';
 import {DbDataSource} from '../datasources';
-import {Brands, Categories, Products, ProductTags, Tags} from '../json';
+import {
+  Brands,
+  Categories,
+  Products,
+  ProductTags,
+  Sections,
+  Tags,
+} from '../json';
 import {Brand, Category, Product, ProductTag, Tag, User} from '../models';
 import {
   BrandRepository,
@@ -114,6 +121,7 @@ export class SeedDataObserver implements LifeCycleObserver {
         email: 'ibrahim@etools.com',
         password: await hash('test1234', await genSalt()),
       });
+      Sections;
       // await this.userRepo.createAll([admin], {transaction: tx});
       // await this.brandRepo.createAll(brands, {transaction: tx});
       // await this.sectionRepo.createAll(Sections, {transaction: tx});

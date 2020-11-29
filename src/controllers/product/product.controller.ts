@@ -129,39 +129,39 @@ export class ProductController {
     });
   }
 
-  @patch('/products/{slug}', {
-    responses: {
-      '204': {
-        description: 'Product PATCH success',
-      },
-    },
-  })
-  async updateBySlug(
-    @param.path.string('slug') slug: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Product, {partial: true}),
-        },
-      },
-    })
-    product: Product,
-  ): Promise<void> {
-    await this.productRepository.updateAll(product, {slug: slug});
-  }
+  // @patch('/products/{slug}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Product PATCH success',
+  //     },
+  //   },
+  // })
+  // async updateBySlug(
+  //   @param.path.string('slug') slug: string,
+  //   @requestBody({
+  //     content: {
+  //       'application/json': {
+  //         schema: getModelSchemaRef(Product, {partial: true}),
+  //       },
+  //     },
+  //   })
+  //   product: Product,
+  // ): Promise<void> {
+  //   await this.productRepository.updateAll(product, {slug: slug});
+  // }
 
-  @del('/products/{slug}', {
-    responses: {
-      '204': {
-        description: 'Product DELETE success',
-      },
-    },
-  })
-  async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
-    await this.productRepository.deleteAll({
-      slug: slug,
-    });
-  }
+  // @del('/products/{slug}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Product DELETE success',
+  //     },
+  //   },
+  // })
+  // async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
+  //   await this.productRepository.deleteAll({
+  //     slug: slug,
+  //   });
+  // }
 
   // @get('/products/{id}', {
   //   responses: {
@@ -183,26 +183,28 @@ export class ProductController {
   //   return this.productRepository.findById(id, filter);
   // }
 
-  // @patch('/products/{id}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Product PATCH success',
-  //     },
-  //   },
-  // })
-  // async updateById(
-  //   @param.path.number('id') id: number,
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(Product, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   product: Product,
-  // ): Promise<void> {
-  //   await this.productRepository.updateById(id, product);
-  // }
+  @patch('/products/{id}', {
+    responses: {
+      '200': {
+        description: 'Product model instance',
+        content: {'application/json': {schema: getModelSchemaRef(Product)}},
+      },
+    },
+  })
+  async updateById(
+    @param.path.number('id') id: number,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Product, {partial: true}),
+        },
+      },
+    })
+    product: Product,
+  ): Promise<Product> {
+    await this.productRepository.updateById(id, product);
+    return this.productRepository.findById(id);
+  }
 
   @put('/products/{id}', {
     responses: {
@@ -218,14 +220,14 @@ export class ProductController {
     await this.productRepository.replaceById(id, product);
   }
 
-  // @del('/products/{id}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Product DELETE success',
-  //     },
-  //   },
-  // })
-  // async deleteById(@param.path.number('id') id: number): Promise<void> {
-  //   await this.productRepository.deleteById(id);
-  // }
+  @del('/products/{id}', {
+    responses: {
+      '204': {
+        description: 'Product DELETE success',
+      },
+    },
+  })
+  async deleteById(@param.path.number('id') id: number): Promise<void> {
+    await this.productRepository.deleteById(id);
+  }
 }

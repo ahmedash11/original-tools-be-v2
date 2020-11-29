@@ -129,39 +129,39 @@ export class SectionController {
     });
   }
 
-  @patch('/sections/{slug}', {
-    responses: {
-      '204': {
-        description: 'Section PATCH success',
-      },
-    },
-  })
-  async updateBySlug(
-    @param.path.string('slug') slug: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Section, {partial: true}),
-        },
-      },
-    })
-    section: Section,
-  ): Promise<void> {
-    await this.sectionRepository.updateAll(section, {slug: slug});
-  }
+  // @patch('/sections/{slug}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Section PATCH success',
+  //     },
+  //   },
+  // })
+  // async updateBySlug(
+  //   @param.path.string('slug') slug: string,
+  //   @requestBody({
+  //     content: {
+  //       'application/json': {
+  //         schema: getModelSchemaRef(Section, {partial: true}),
+  //       },
+  //     },
+  //   })
+  //   section: Section,
+  // ): Promise<void> {
+  //   await this.sectionRepository.updateAll(section, {slug: slug});
+  // }
 
-  @del('/sections/{slug}', {
-    responses: {
-      '204': {
-        description: 'Section DELETE success',
-      },
-    },
-  })
-  async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
-    await this.sectionRepository.deleteAll({
-      slug: slug,
-    });
-  }
+  // @del('/sections/{slug}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Section DELETE success',
+  //     },
+  //   },
+  // })
+  // async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
+  //   await this.sectionRepository.deleteAll({
+  //     slug: slug,
+  //   });
+  // }
 
   // @get('/sections/{id}', {
   //   responses: {
@@ -183,26 +183,26 @@ export class SectionController {
   //   return this.sectionRepository.findById(id, filter);
   // }
 
-  // @patch('/sections/{id}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Section PATCH success',
-  //     },
-  //   },
-  // })
-  // async updateById(
-  //   @param.path.number('id') id: number,
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(Section, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   section: Section,
-  // ): Promise<void> {
-  //   await this.sectionRepository.updateById(id, section);
-  // }
+  @patch('/sections/{id}', {
+    responses: {
+      '204': {
+        description: 'Section PATCH success',
+      },
+    },
+  })
+  async updateById(
+    @param.path.number('id') id: number,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Section, {partial: true}),
+        },
+      },
+    })
+    section: Section,
+  ): Promise<void> {
+    await this.sectionRepository.updateById(id, section);
+  }
 
   @put('/sections/{id}', {
     responses: {
@@ -218,14 +218,14 @@ export class SectionController {
     await this.sectionRepository.replaceById(id, section);
   }
 
-  // @del('/sections/{id}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Section DELETE success',
-  //     },
-  //   },
-  // })
-  // async deleteById(@param.path.number('id') id: number): Promise<void> {
-  //   await this.sectionRepository.deleteById(id);
-  // }
+  @del('/sections/{id}', {
+    responses: {
+      '204': {
+        description: 'Section DELETE success',
+      },
+    },
+  })
+  async deleteById(@param.path.number('id') id: number): Promise<void> {
+    await this.sectionRepository.deleteById(id);
+  }
 }

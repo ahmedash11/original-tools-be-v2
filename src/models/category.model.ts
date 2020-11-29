@@ -23,7 +23,7 @@ import {Section} from './section.model';
         entity: 'Section',
         entityKey: 'id',
         foreignKey: 'sectionId',
-        onDelete: 'cascade',
+        onDelete: 'restrict',
       },
     },
   },

@@ -127,39 +127,39 @@ export class BrandController {
     });
   }
 
-  @patch('/brands/{slug}', {
-    responses: {
-      '204': {
-        description: 'Brand PATCH success',
-      },
-    },
-  })
-  async updateBySlug(
-    @param.path.string('slug') slug: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Brand, {partial: true}),
-        },
-      },
-    })
-    brand: Brand,
-  ): Promise<void> {
-    await this.brandRepository.updateAll(brand, {slug: slug});
-  }
+  // @patch('/brands/{slug}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Brand PATCH success',
+  //     },
+  //   },
+  // })
+  // async updateBySlug(
+  //   @param.path.string('slug') slug: string,
+  //   @requestBody({
+  //     content: {
+  //       'application/json': {
+  //         schema: getModelSchemaRef(Brand, {partial: true}),
+  //       },
+  //     },
+  //   })
+  //   brand: Brand,
+  // ): Promise<void> {
+  //   await this.brandRepository.updateAll(brand, {slug: slug});
+  // }
 
-  @del('/brands/{slug}', {
-    responses: {
-      '204': {
-        description: 'Brand DELETE success',
-      },
-    },
-  })
-  async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
-    await this.brandRepository.deleteAll({
-      slug: slug,
-    });
-  }
+  // @del('/brands/{slug}', {
+  //   responses: {
+  //     '204': {
+  //       description: 'Brand DELETE success',
+  //     },
+  //   },
+  // })
+  // async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
+  //   await this.brandRepository.deleteAll({
+  //     slug: slug,
+  //   });
+  // }
 
   // @get('/brands/{id}', {
   //   responses: {
@@ -181,26 +181,28 @@ export class BrandController {
   //   return this.brandRepository.findById(id, filter);
   // }
 
-  // @patch('/brands/{id}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Brand PATCH success',
-  //     },
-  //   },
-  // })
-  // async updateById(
-  //   @param.path.number('id') id: number,
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(Brand, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   brand: Brand,
-  // ): Promise<void> {
-  //   await this.brandRepository.updateById(id, brand);
-  // }
+  @patch('/brands/{id}', {
+    responses: {
+      '200': {
+        description: 'Brand model instance',
+        content: {'application/json': {schema: getModelSchemaRef(Brand)}},
+      },
+    },
+  })
+  async updateById(
+    @param.path.number('id') id: number,
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Brand, {partial: true}),
+        },
+      },
+    })
+    brand: Brand,
+  ): Promise<Brand> {
+    await this.brandRepository.updateById(id, brand);
+    return this.brandRepository.findById(id);
+  }
 
   @put('/brands/{id}', {
     responses: {
@@ -216,27 +218,14 @@ export class BrandController {
     await this.brandRepository.replaceById(id, brand);
   }
 
-  // @del('/brands/{id}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Brand DELETE success',
-  //     },
-  //   },
-  // })
-  // async deleteById(@param.path.number('id') id: number): Promise<void> {
-  //   await this.brandRepository.deleteById(id);
-  // }
-
-  @del('/brands', {
+  @del('/brands/{id}', {
     responses: {
       '204': {
         description: 'Brand DELETE success',
       },
     },
   })
-  async deleteByQuery(
-    @param.filter(Brand) where?: Where<Brand>,
-  ): Promise<Count> {
-    return this.brandRepository.deleteAll(where);
+  async deleteById(@param.path.number('id') id: number): Promise<void> {
+    await this.brandRepository.deleteById(id);
   }
 }

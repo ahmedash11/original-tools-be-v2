@@ -17,6 +17,19 @@ export class Tag extends Entity {
   title?: string;
 
   @property({
+    type: 'string',
+  })
+  meta_title?: string;
+
+  @property({
+    type: 'string',
+    mysql: {
+      dataType: 'LONGTEXT',
+    },
+  })
+  meta_description?: string;
+
+  @property({
     type: 'boolean',
   })
   active?: boolean;
