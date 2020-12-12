@@ -13,12 +13,31 @@ export class Section extends Entity {
   @property({
     type: 'string',
   })
-  title?: string;
+  title: string;
+
+  @property({
+    type: 'string',
+  })
+  metaTitle?: string;
+
+  @property({
+    type: 'string',
+    mysql: {
+      dataType: 'LONGTEXT',
+    },
+  })
+  metaDescription?: string;
 
   @property({
     type: 'string',
   })
   slug?: string;
+
+  @property({
+    type: 'boolean',
+    default: true,
+  })
+  active?: boolean;
 
   @hasMany(() => Category)
   categories: Category[];

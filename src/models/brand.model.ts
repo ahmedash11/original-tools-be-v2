@@ -18,7 +18,7 @@ export class Brand extends Entity {
   @property({
     type: 'string',
   })
-  meta_title: string;
+  metaTitle: string;
 
   @property({
     type: 'string',
@@ -34,7 +34,7 @@ export class Brand extends Entity {
       dataType: 'LONGTEXT',
     },
   })
-  meta_description?: string;
+  metaDescription?: string;
 
   @property({
     type: 'string',

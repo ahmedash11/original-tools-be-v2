@@ -44,6 +44,19 @@ export class Category extends Entity {
   @property({
     type: 'string',
   })
+  metaTitle?: string;
+
+  @property({
+    type: 'string',
+    mysql: {
+      dataType: 'LONGTEXT',
+    },
+  })
+  metaDescription?: string;
+
+  @property({
+    type: 'string',
+  })
   slug: string;
 
   @property({

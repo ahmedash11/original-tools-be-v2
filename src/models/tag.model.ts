@@ -19,7 +19,7 @@ export class Tag extends Entity {
   @property({
     type: 'string',
   })
-  meta_title?: string;
+  metaTitle?: string;
 
   @property({
     type: 'string',
@@ -27,7 +27,7 @@ export class Tag extends Entity {
       dataType: 'LONGTEXT',
     },
   })
-  meta_description?: string;
+  metaDescription?: string;
 
   @property({
     type: 'boolean',

@@ -9,6 +9,8 @@ export async function migrate(args: string[]) {
   await app.migrateSchema({
     existingSchema,
     models: [
+      'City',
+      'Area',
       'Brand',
       'Cart',
       'Section',
@@ -20,6 +22,12 @@ export async function migrate(args: string[]) {
       'User',
       'ProductTag',
       'ProductType',
+      'Customer',
+      'Address',
+      'Order',
+      'OrderProduct',
+      'Quotation',
+      'Request',
     ],
   });
 
