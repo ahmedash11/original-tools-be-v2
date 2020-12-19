@@ -15,7 +15,7 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
-import {Category, Product} from '../../models';
+import {Category, CategoryRelations, Product} from '../../models';
 import {CategoryRepository} from '../../repositories';
 
 export class CategoryProductController {
@@ -24,7 +24,7 @@ export class CategoryProductController {
     protected categoryRepository: CategoryRepository,
   ) {}
 
-  @get('/categories/{id}/products', {
+  @get('/categories/{slug}/products', {
     responses: {
       '200': {
         description: 'Array of Category has many Product',
@@ -37,10 +37,48 @@ export class CategoryProductController {
     },
   })
   async find(
-    @param.path.number('id') id: number,
+    @param.path.string('slug') slug: string,
     @param.query.object('filter') filter?: Filter<Product>,
-  ): Promise<Product[]> {
-    return this.categoryRepository.products(id).find(filter);
+  ): Promise<{
+    filters: {
+      type: string;
+      slug: string;
+      name: string;
+      items: (Category & CategoryRelations)[];
+    };
+    items: Product[];
+  }> {
+    const category = await this.categoryRepository.findOne({
+      where: {
+        slug: slug,
+      },
+    });
+
+    const response = {
+      filters: {
+        type: 'category',
+        slug: 'categories',
+        name: 'Categories',
+        items: [
+          ...(await this.categoryRepository.find({
+            where: {
+              parentId: category?.parentId,
+            },
+          })),
+          ...(await this.categoryRepository.find({
+            where: {
+              parentId: undefined,
+            },
+            limit: 5,
+          })),
+        ],
+      },
+      items: category
+        ? await this.categoryRepository.products(category?.id).find(filter)
+        : [],
+    };
+
+    return response;
   }
 
   @post('/categories/{id}/products', {
