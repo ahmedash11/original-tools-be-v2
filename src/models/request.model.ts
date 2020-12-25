@@ -20,12 +20,33 @@ export class Request extends Entity {
     generated: true,
   })
   id?: number;
+  @property({
+    type: 'string',
+    required: true,
+  })
+  name: string;
+
+  @property({
+    type: 'string',
+    required: true,
+  })
+  address: string;
+
+  @property({
+    type: 'string',
+  })
+  email: string;
+
+  @property({
+    type: 'string',
+  })
+  mobile: string;
 
   @belongsTo(() => Product)
   productId: number;
 
   @belongsTo(() => Customer)
-  customerId: number;
+  customerId?: number;
 
   constructor(data?: Partial<Request>) {
     super(data);

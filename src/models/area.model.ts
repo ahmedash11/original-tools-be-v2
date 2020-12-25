@@ -18,13 +18,20 @@ export class Area extends Entity {
     id: true,
     generated: true,
   })
-  id?: number;
+  id: number;
 
   @property({
     type: 'string',
     required: true,
   })
   title: string;
+
+  @property({
+    type: 'number',
+    required: true,
+    default: 0,
+  })
+  delievery?: number;
 
   @belongsTo(() => City)
   cityId: number;

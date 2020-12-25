@@ -40,6 +40,7 @@ export class Order extends Entity {
 
   @property({
     type: 'string',
+    default: 'Pending',
   })
   status?: string;
 

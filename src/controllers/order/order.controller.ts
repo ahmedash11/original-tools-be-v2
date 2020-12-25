@@ -1,8 +1,11 @@
+import {inject} from '@loopback/core';
 import {
   Count,
   CountSchema,
+  DefaultTransactionalRepository,
   Filter,
   FilterExcludingWhere,
+  IsolationLevel,
   repository,
   Where,
 } from '@loopback/repository';
@@ -16,13 +19,26 @@ import {
   put,
   requestBody,
 } from '@loopback/rest';
-import {Order} from '../../models';
-import {OrderRepository} from '../../repositories';
+import {DbDataSource} from '../../datasources';
+import {Address, Customer, Order} from '../../models';
+import {
+  AddressRepository,
+  CustomerRepository,
+  OrderProductRepository,
+  OrderRepository,
+} from '../../repositories';
 
 export class OrderController {
   constructor(
+    @inject('datasources.db') private dataSource: DbDataSource,
     @repository(OrderRepository)
     public orderRepository: OrderRepository,
+    @repository(CustomerRepository)
+    public customerRepository: CustomerRepository,
+    @repository(AddressRepository)
+    public addressRepository: AddressRepository,
+    @repository(OrderProductRepository)
+    public orderProductRepository: OrderProductRepository,
   ) {}
 
   @post('/orders', {
@@ -37,16 +53,45 @@ export class OrderController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Order, {
-            title: 'NewOrder',
-            exclude: ['id'],
-          }),
+          schema: {
+            address: Address,
+            customer: Customer,
+            products: Object,
+            total: Number,
+          },
         },
       },
     })
-    order: Omit<Order, 'id'>,
+    order: {
+      address: Address;
+      customer: Customer;
+      products: object[];
+      total: number;
+    },
   ): Promise<Order> {
-    return this.orderRepository.create(order);
+    try {
+      const repo = new DefaultTransactionalRepository(Order, this.dataSource);
+      const tx = await repo.beginTransaction(IsolationLevel.READ_COMMITTED);
+      const {customer, address, products, total} = order;
+      const customerData = await this.customerRepository.create(customer, {
+        transaction: tx,
+      });
+      await this.addressRepository.create(address, {transaction: tx});
+      let orderData = {
+        customerId: customerData.id,
+        total: total,
+      };
+      let newOrder = await this.orderRepository.create(orderData, {
+        transaction: tx,
+      });
+      await this.orderProductRepository.createAll(
+        products.map(product => ({...product, orderId: newOrder.id})),
+        {transaction: tx},
+      );
+      return newOrder;
+    } catch (err) {
+      throw err;
+    }
   }
 
   @get('/orders/count', {
