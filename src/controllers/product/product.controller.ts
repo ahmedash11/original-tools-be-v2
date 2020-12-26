@@ -1,6 +1,7 @@
 import {
   Count,
   CountSchema,
+  Filter,
   FilterExcludingWhere,
   repository,
   Where,
@@ -68,7 +69,7 @@ export class ProductController {
     return this.productRepository.count(where);
   }
 
-  @get('/products', {
+  @get('/productsList', {
     responses: {
       '200': {
         description: 'Array of Product model instances',
@@ -83,11 +84,11 @@ export class ProductController {
       },
     },
   })
-  async find(
+  async findList(
     @param.filter(Product) filter?: any,
   ): Promise<{items: Product[]; total: number}> {
     let category;
-    if (filter.where.category) {
+    if (filter.where?.category) {
       category = await this.categoryRepository.findOne({
         where: {
           slug: filter.where.category,
@@ -126,6 +127,27 @@ export class ProductController {
         total: results[3].count,
       };
     });
+  }
+
+  @get('/products', {
+    responses: {
+      '200': {
+        description: 'Array of Product model instances',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'array',
+              items: getModelSchemaRef(Product, {includeRelations: true}),
+            },
+          },
+        },
+      },
+    },
+  })
+  async find(
+    @param.filter(Product) filter?: Filter<Product>,
+  ): Promise<Product[]> {
+    return this.productRepository.find(filter);
   }
 
   @patch('/products', {
