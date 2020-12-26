@@ -1,7 +1,6 @@
 import {
   Count,
   CountSchema,
-  Filter,
   FilterExcludingWhere,
   repository,
   Where,
@@ -17,12 +16,20 @@ import {
   requestBody,
 } from '@loopback/rest';
 import {Product} from '../../models';
-import {ProductRepository} from '../../repositories';
+import {
+  BrandRepository,
+  CategoryRepository,
+  ProductRepository,
+} from '../../repositories';
 
 export class ProductController {
   constructor(
     @repository(ProductRepository)
     public productRepository: ProductRepository,
+    @repository(CategoryRepository)
+    public categoryRepository: CategoryRepository,
+    @repository(BrandRepository)
+    public brandRepository: BrandRepository,
   ) {}
 
   @post('/products', {
@@ -77,9 +84,48 @@ export class ProductController {
     },
   })
   async find(
-    @param.filter(Product) filter?: Filter<Product>,
-  ): Promise<Product[]> {
-    return this.productRepository.find(filter);
+    @param.filter(Product) filter?: any,
+  ): Promise<{items: Product[]; total: number}> {
+    let category;
+    if (filter.where.category) {
+      category = await this.categoryRepository.findOne({
+        where: {
+          slug: filter.where.category,
+        },
+      });
+      filter.where.categoryId = category?.id || 0;
+    }
+
+    if (filter.where?.brand) {
+      const brand = await this.brandRepository.findOne({
+        where: {
+          slug: filter.where.brand,
+        },
+      });
+      filter.where.brandId = brand?.id || 0;
+    }
+    const x = await this.productRepository.find(filter);
+    return Promise.all([
+      this.productRepository.find(filter),
+      this.categoryRepository.find({
+        where: {
+          parentId: category?.parentId || 0,
+        },
+      }),
+      this.categoryRepository.find({
+        where: {
+          parentId: undefined,
+        },
+        limit: 5,
+      }),
+      this.productRepository.count(filter.where),
+    ]).then(results => {
+      return {
+        items: results[0],
+        categories: [...results[1], ...results[2]],
+        total: results[3].count,
+      };
+    });
   }
 
   @patch('/products', {
@@ -128,60 +174,6 @@ export class ProductController {
       ...filter,
     });
   }
-
-  // @patch('/products/{slug}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Product PATCH success',
-  //     },
-  //   },
-  // })
-  // async updateBySlug(
-  //   @param.path.string('slug') slug: string,
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(Product, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   product: Product,
-  // ): Promise<void> {
-  //   await this.productRepository.updateAll(product, {slug: slug});
-  // }
-
-  // @del('/products/{slug}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Product DELETE success',
-  //     },
-  //   },
-  // })
-  // async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
-  //   await this.productRepository.deleteAll({
-  //     slug: slug,
-  //   });
-  // }
-
-  // @get('/products/{id}', {
-  //   responses: {
-  //     '200': {
-  //       description: 'Product model instance',
-  //       content: {
-  //         'application/json': {
-  //           schema: getModelSchemaRef(Product, {includeRelations: true}),
-  //         },
-  //       },
-  //     },
-  //   },
-  // })
-  // async findById(
-  //   @param.path.number('id') id: number,
-  //   @param.filter(Product, {exclude: 'where'})
-  //   filter?: FilterExcludingWhere<Product>,
-  // ): Promise<Product> {
-  //   return this.productRepository.findById(id, filter);
-  // }
 
   @patch('/products/{id}', {
     responses: {
