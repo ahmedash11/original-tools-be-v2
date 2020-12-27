@@ -15,7 +15,7 @@ import {
   post,
   requestBody,
 } from '@loopback/rest';
-import {Category, CategoryRelations, Product} from '../../models';
+import {Category, Product} from '../../models';
 import {CategoryRepository} from '../../repositories';
 
 export class CategoryProductController {
@@ -39,46 +39,15 @@ export class CategoryProductController {
   async find(
     @param.path.string('slug') slug: string,
     @param.query.object('filter') filter?: Filter<Product>,
-  ): Promise<{
-    filters: {
-      type: string;
-      slug: string;
-      name: string;
-      items: (Category & CategoryRelations)[];
-    };
-    items: Product[];
-  }> {
+  ): Promise<Product[]> {
     const category = await this.categoryRepository.findOne({
       where: {
         slug: slug,
       },
     });
-
-    const response = {
-      filters: {
-        type: 'category',
-        slug: 'categories',
-        name: 'Categories',
-        items: [
-          ...(await this.categoryRepository.find({
-            where: {
-              parentId: category?.parentId,
-            },
-          })),
-          ...(await this.categoryRepository.find({
-            where: {
-              parentId: undefined,
-            },
-            limit: 5,
-          })),
-        ],
-      },
-      items: category
-        ? await this.categoryRepository.products(category?.id).find(filter)
-        : [],
-    };
-
-    return response;
+    return category
+      ? await this.categoryRepository.products(category.id).find(filter)
+      : [];
   }
 
   @post('/categories/{id}/products', {
