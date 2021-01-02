@@ -16,11 +16,13 @@ import {
   requestBody,
 } from '@loopback/rest';
 import {Order, Product} from '../../models';
-import {OrderRepository} from '../../repositories';
+import {OrderProductRepository, OrderRepository} from '../../repositories';
 
 export class OrderProductController {
   constructor(
     @repository(OrderRepository) protected orderRepository: OrderRepository,
+    @repository(OrderProductRepository)
+    protected orderProductRepository: OrderProductRepository,
   ) {}
 
   @get('/orders/{id}/products', {
@@ -38,8 +40,22 @@ export class OrderProductController {
   async find(
     @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<Product>,
-  ): Promise<Product[]> {
-    return this.orderRepository.products(id).find(filter);
+  ): Promise<any[]> {
+    let relation = await this.orderProductRepository.find({
+      where: {
+        orderId: id,
+      },
+    });
+    let data = [];
+    data = await this.orderRepository.products(id).find(filter);
+    data = data.map(product => {
+      return {
+        ...product,
+        orderQuantity: relation.find(rel => rel.productId === product.id)
+          ?.quantity,
+      };
+    });
+    return data;
   }
 
   @post('/orders/{id}/products', {
