@@ -39,6 +39,16 @@ export class Order extends Entity {
   comment?: string;
 
   @property({
+    type: 'date',
+  })
+  orderDate: Date;
+
+  @property({
+    type: 'date',
+  })
+  delievryDate?: Date;
+
+  @property({
     type: 'string',
     default: 'Pending',
   })

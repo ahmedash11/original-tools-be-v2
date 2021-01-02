@@ -5,7 +5,6 @@ import {
   DefaultTransactionalRepository,
   Filter,
   FilterExcludingWhere,
-  IsolationLevel,
   repository,
   Where,
 } from '@loopback/repository';
@@ -70,28 +69,21 @@ export class OrderController {
     },
   ): Promise<Order> {
     const repo = new DefaultTransactionalRepository(Order, this.dataSource);
-    const tx = await repo.beginTransaction(IsolationLevel.READ_COMMITTED);
     try {
       const {customer, address, products, total} = order;
-      const customerData = await this.customerRepository.create(customer, {
-        transaction: tx,
-      });
-      await this.addressRepository.create(address, {transaction: tx});
+      const customerData = await this.customerRepository.create(customer);
+      await this.addressRepository.create(address);
       let orderData = {
         customerId: customerData.id,
         total: total,
+        orderDate: new Date(),
       };
-      let newOrder = await this.orderRepository.create(orderData, {
-        transaction: tx,
-      });
+      let newOrder = await this.orderRepository.create(orderData);
       await this.orderProductRepository.createAll(
         products.map(product => ({...product, orderId: newOrder.id})),
-        {transaction: tx},
       );
-      await tx.commit();
       return newOrder;
     } catch (err) {
-      await tx.rollback();
       throw err;
     }
   }
