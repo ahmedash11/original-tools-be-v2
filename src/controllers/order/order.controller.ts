@@ -69,9 +69,9 @@ export class OrderController {
       total: number;
     },
   ): Promise<Order> {
+    const repo = new DefaultTransactionalRepository(Order, this.dataSource);
+    const tx = await repo.beginTransaction(IsolationLevel.READ_COMMITTED);
     try {
-      const repo = new DefaultTransactionalRepository(Order, this.dataSource);
-      const tx = await repo.beginTransaction(IsolationLevel.READ_COMMITTED);
       const {customer, address, products, total} = order;
       const customerData = await this.customerRepository.create(customer, {
         transaction: tx,
@@ -88,8 +88,10 @@ export class OrderController {
         products.map(product => ({...product, orderId: newOrder.id})),
         {transaction: tx},
       );
+      await tx.commit();
       return newOrder;
     } catch (err) {
+      await tx.rollback();
       throw err;
     }
   }
