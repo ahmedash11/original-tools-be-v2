@@ -46,7 +46,7 @@ export class Order extends Entity {
   @property({
     type: 'date',
   })
-  delievryDate?: Date;
+  deliveryDate?: Date;
 
   @property({
     type: 'string',
