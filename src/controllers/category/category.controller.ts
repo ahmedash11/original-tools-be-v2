@@ -1,3 +1,4 @@
+import {inject} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -14,13 +15,20 @@ import {
   patch,
   post,
   put,
+  Request,
   requestBody,
+  Response,
+  RestBindings,
 } from '@loopback/rest';
+import {FILE_UPLOAD_SERVICE} from '../../keys';
 import {Category} from '../../models';
 import {CategoryRepository} from '../../repositories';
+import {getFilesAndFields} from '../../services';
+import {FileUploadHandler} from '../../types';
 
 export class CategoryController {
   constructor(
+    @inject(FILE_UPLOAD_SERVICE) private handler: FileUploadHandler,
     @repository(CategoryRepository)
     public categoryRepository: CategoryRepository,
   ) {}
@@ -216,6 +224,35 @@ export class CategoryController {
     @requestBody() category: Category,
   ): Promise<void> {
     await this.categoryRepository.replaceById(id, category);
+  }
+
+  @post('/categories/upload', {
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+        description: 'Files and fields',
+      },
+    },
+  })
+  async fileUpload(
+    @requestBody.file()
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<object> {
+    return new Promise<object>((resolve, reject) => {
+      this.handler(request, response, (err: unknown) => {
+        if (err) reject(err);
+        else {
+          resolve(getFilesAndFields(request, 'category'));
+        }
+      });
+    });
   }
 
   @del('/categories/{id}', {

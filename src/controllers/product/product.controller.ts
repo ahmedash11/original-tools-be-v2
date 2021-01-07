@@ -1,3 +1,4 @@
+import {inject} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -14,17 +15,24 @@ import {
   patch,
   post,
   put,
+  Request,
   requestBody,
+  Response,
+  RestBindings,
 } from '@loopback/rest';
+import {FILE_UPLOAD_SERVICE} from '../../keys';
 import {Product} from '../../models';
 import {
   BrandRepository,
   CategoryRepository,
   ProductRepository,
 } from '../../repositories';
+import {getFilesAndFields} from '../../services';
+import {FileUploadHandler} from '../../types';
 
 export class ProductController {
   constructor(
+    @inject(FILE_UPLOAD_SERVICE) private handler: FileUploadHandler,
     @repository(ProductRepository)
     public productRepository: ProductRepository,
     @repository(CategoryRepository)
@@ -232,6 +240,35 @@ export class ProductController {
     @requestBody() product: Product,
   ): Promise<void> {
     await this.productRepository.replaceById(id, product);
+  }
+
+  @post('/products/upload', {
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+        description: 'Files and fields',
+      },
+    },
+  })
+  async fileUpload(
+    @requestBody.file()
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<object> {
+    return new Promise<object>((resolve, reject) => {
+      this.handler(request, response, (err: unknown) => {
+        if (err) reject(err);
+        else {
+          resolve(getFilesAndFields(request, 'products'));
+        }
+      });
+    });
   }
 
   @del('/products/{id}', {

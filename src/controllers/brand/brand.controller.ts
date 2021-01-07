@@ -1,3 +1,4 @@
+import {inject} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -14,13 +15,19 @@ import {
   patch,
   post,
   put,
+  Request,
   requestBody,
+  Response,
+  RestBindings,
 } from '@loopback/rest';
+import {FILE_UPLOAD_SERVICE} from '../../keys';
 import {Brand} from '../../models';
 import {BrandRepository} from '../../repositories';
-
+import {getFilesAndFields} from '../../services';
+import {FileUploadHandler} from '../../types';
 export class BrandController {
   constructor(
+    @inject(FILE_UPLOAD_SERVICE) private handler: FileUploadHandler,
     @repository(BrandRepository)
     public brandRepository: BrandRepository,
   ) {}
@@ -216,6 +223,35 @@ export class BrandController {
     @requestBody() brand: Brand,
   ): Promise<void> {
     await this.brandRepository.replaceById(id, brand);
+  }
+
+  @post('/brands/upload', {
+    responses: {
+      200: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+            },
+          },
+        },
+        description: 'Files and fields',
+      },
+    },
+  })
+  async fileUpload(
+    @requestBody.file()
+    request: Request,
+    @inject(RestBindings.Http.RESPONSE) response: Response,
+  ): Promise<object> {
+    return new Promise<object>((resolve, reject) => {
+      this.handler(request, response, (err: unknown) => {
+        if (err) reject(err);
+        else {
+          resolve(getFilesAndFields(request, 'brands'));
+        }
+      });
+    });
   }
 
   @del('/brands/{id}', {
