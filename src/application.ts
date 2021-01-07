@@ -61,7 +61,7 @@ export class TestApp extends BootMixin(
    */
   protected configureFileUpload(destination?: string) {
     // Upload files to `dist/.sandbox` by default
-    destination = path.join(__dirname, '../.sandbox');
+    destination = `/media/uploads/images`;
     this.bind(STORAGE_DIRECTORY).to(destination);
     const multerOptions: multer.Options = {
       storage: multer.diskStorage({
