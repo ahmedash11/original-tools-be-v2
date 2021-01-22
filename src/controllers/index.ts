@@ -1,6 +1,7 @@
 export * from './address/address-area.controller';
 export * from './address/address-city.controller';
 export * from './address/address.controller';
+export * from './ads/ads.controller';
 export * from './area/area-city.controller';
 export * from './area/area.controller';
 export * from './brand/brand-product.controller';

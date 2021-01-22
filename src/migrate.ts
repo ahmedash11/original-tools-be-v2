@@ -9,6 +9,7 @@ export async function migrate(args: string[]) {
   await app.migrateSchema({
     existingSchema,
     models: [
+      'Ads',
       'City',
       'Area',
       'Brand',
