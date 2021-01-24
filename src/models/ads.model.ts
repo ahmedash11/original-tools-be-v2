@@ -12,7 +12,7 @@ export class Ads extends Entity {
   @property({
     type: 'string',
   })
-  title?: string;
+  title: string;
 
   @property({
     type: 'string',
@@ -28,6 +28,11 @@ export class Ads extends Entity {
     type: 'string',
   })
   mobileImg?: string;
+
+  @property({
+    type: 'string',
+  })
+  link?: string;
 
   @property({
     type: 'boolean',

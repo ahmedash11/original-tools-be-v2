@@ -18,6 +18,7 @@ import {
 } from '@loopback/rest';
 import {Section} from '../../models';
 import {SectionRepository} from '../../repositories';
+import {generateSlug} from '../../services';
 
 export class SectionController {
   constructor(
@@ -46,6 +47,7 @@ export class SectionController {
     })
     section: Omit<Section, 'id'>,
   ): Promise<Section> {
+    section.slug = generateSlug(section.title);
     return this.sectionRepository.create(section);
   }
 
@@ -129,60 +131,6 @@ export class SectionController {
     });
   }
 
-  // @patch('/sections/{slug}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Section PATCH success',
-  //     },
-  //   },
-  // })
-  // async updateBySlug(
-  //   @param.path.string('slug') slug: string,
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(Section, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   section: Section,
-  // ): Promise<void> {
-  //   await this.sectionRepository.updateAll(section, {slug: slug});
-  // }
-
-  // @del('/sections/{slug}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Section DELETE success',
-  //     },
-  //   },
-  // })
-  // async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
-  //   await this.sectionRepository.deleteAll({
-  //     slug: slug,
-  //   });
-  // }
-
-  // @get('/sections/{id}', {
-  //   responses: {
-  //     '200': {
-  //       description: 'Section model instance',
-  //       content: {
-  //         'application/json': {
-  //           schema: getModelSchemaRef(Section, {includeRelations: true}),
-  //         },
-  //       },
-  //     },
-  //   },
-  // })
-  // async findById(
-  //   @param.path.number('id') id: number,
-  //   @param.filter(Section, {exclude: 'where'})
-  //   filter?: FilterExcludingWhere<Section>,
-  // ): Promise<Section> {
-  //   return this.sectionRepository.findById(id, filter);
-  // }
-
   @patch('/sections/{id}', {
     responses: {
       '204': {
@@ -200,8 +148,10 @@ export class SectionController {
       },
     })
     section: Section,
-  ): Promise<void> {
+  ): Promise<Section> {
+    section.slug = generateSlug(section.title);
     await this.sectionRepository.updateById(id, section);
+    return this.sectionRepository.findById(id);
   }
 
   @put('/sections/{id}', {

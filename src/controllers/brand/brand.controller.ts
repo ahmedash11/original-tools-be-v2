@@ -23,7 +23,7 @@ import {
 import {FILE_UPLOAD_SERVICE} from '../../keys';
 import {Brand} from '../../models';
 import {BrandRepository} from '../../repositories';
-import {getFilesAndFields} from '../../services';
+import {generateSlug, getFilesAndFields} from '../../services';
 import {FileUploadHandler} from '../../types';
 export class BrandController {
   constructor(
@@ -53,6 +53,7 @@ export class BrandController {
     })
     brand: Omit<Brand, 'id'>,
   ): Promise<Brand> {
+    brand.slug = generateSlug(brand.title);
     return this.brandRepository.create(brand);
   }
 
@@ -134,60 +135,6 @@ export class BrandController {
     });
   }
 
-  // @patch('/brands/{slug}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Brand PATCH success',
-  //     },
-  //   },
-  // })
-  // async updateBySlug(
-  //   @param.path.string('slug') slug: string,
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(Brand, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   brand: Brand,
-  // ): Promise<void> {
-  //   await this.brandRepository.updateAll(brand, {slug: slug});
-  // }
-
-  // @del('/brands/{slug}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Brand DELETE success',
-  //     },
-  //   },
-  // })
-  // async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
-  //   await this.brandRepository.deleteAll({
-  //     slug: slug,
-  //   });
-  // }
-
-  // @get('/brands/{id}', {
-  //   responses: {
-  //     '200': {
-  //       description: 'Brand model instance',
-  //       content: {
-  //         'application/json': {
-  //           schema: getModelSchemaRef(Brand, {includeRelations: true}),
-  //         },
-  //       },
-  //     },
-  //   },
-  // })
-  // async findById(
-  //   @param.path.number('id') id: number,
-  //   @param.filter(Brand, {exclude: 'where'})
-  //   filter?: FilterExcludingWhere<Brand>,
-  // ): Promise<Brand> {
-  //   return this.brandRepository.findById(id, filter);
-  // }
-
   @patch('/brands/{id}', {
     responses: {
       '200': {
@@ -207,6 +154,7 @@ export class BrandController {
     })
     brand: Brand,
   ): Promise<Brand> {
+    brand.slug = generateSlug(brand.title);
     await this.brandRepository.updateById(id, brand);
     return this.brandRepository.findById(id);
   }

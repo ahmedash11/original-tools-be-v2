@@ -43,7 +43,7 @@ export class Product extends Entity {
   @property({
     type: 'string',
   })
-  title?: string;
+  title: string;
 
   @property({
     type: 'string',

@@ -31,7 +31,12 @@ export class Section extends Entity {
   @property({
     type: 'string',
   })
-  slug?: string;
+  slug: string;
+
+  @property({
+    type: 'number',
+  })
+  order?: number;
 
   @property({
     type: 'boolean',

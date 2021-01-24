@@ -18,6 +18,7 @@ import {
 } from '@loopback/rest';
 import {Tag} from '../../models';
 import {TagRepository} from '../../repositories';
+import {generateSlug} from '../../services';
 
 export class TagController {
   constructor(
@@ -46,6 +47,7 @@ export class TagController {
     })
     tag: Omit<Tag, 'id'>,
   ): Promise<Tag> {
+    tag.slug = generateSlug(tag.title);
     return this.tagRepository.create(tag);
   }
 
@@ -127,59 +129,6 @@ export class TagController {
     });
   }
 
-  // @patch('/tags/{slug}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Tag PATCH success',
-  //     },
-  //   },
-  // })
-  // async updateBySlug(
-  //   @param.path.string('slug') slug: string,
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(Tag, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   tag: Tag,
-  // ): Promise<void> {
-  //   await this.tagRepository.updateAll(tag, {slug: slug});
-  // }
-
-  // @del('/tags/{slug}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Tag DELETE success',
-  //     },
-  //   },
-  // })
-  // async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
-  //   await this.tagRepository.deleteAll({
-  //     slug: slug,
-  //   });
-  // }
-
-  // @get('/tags/{id}', {
-  //   responses: {
-  //     '200': {
-  //       description: 'Tag model instance',
-  //       content: {
-  //         'application/json': {
-  //           schema: getModelSchemaRef(Tag, {includeRelations: true}),
-  //         },
-  //       },
-  //     },
-  //   },
-  // })
-  // async findById(
-  //   @param.path.number('id') id: number,
-  //   @param.filter(Tag, {exclude: 'where'}) filter?: FilterExcludingWhere<Tag>,
-  // ): Promise<Tag> {
-  //   return this.tagRepository.findById(id, filter);
-  // }
-
   @patch('/tags/{id}', {
     responses: {
       '200': {
@@ -203,6 +152,7 @@ export class TagController {
     })
     tag: Tag,
   ): Promise<Tag> {
+    tag.slug = generateSlug(tag.title);
     await this.tagRepository.updateById(id, tag);
     return this.tagRepository.findById(id);
   }

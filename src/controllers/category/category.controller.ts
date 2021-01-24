@@ -23,7 +23,7 @@ import {
 import {FILE_UPLOAD_SERVICE} from '../../keys';
 import {Category} from '../../models';
 import {CategoryRepository} from '../../repositories';
-import {getFilesAndFields} from '../../services';
+import {generateSlug, getFilesAndFields} from '../../services';
 import {FileUploadHandler} from '../../types';
 
 export class CategoryController {
@@ -54,6 +54,7 @@ export class CategoryController {
     })
     category: Omit<Category, 'id'>,
   ): Promise<Category> {
+    category.slug = generateSlug(category.title);
     return this.categoryRepository.create(category);
   }
 
@@ -137,27 +138,6 @@ export class CategoryController {
     });
   }
 
-  // @patch('/categories/{slug}', {
-  //   responses: {
-  //     '204': {
-  //       description: 'Category PATCH success',
-  //     },
-  //   },
-  // })
-  // async updateBySlug(
-  //   @param.path.string('slug') slug: string,
-  //   @requestBody({
-  //     content: {
-  //       'application/json': {
-  //         schema: getModelSchemaRef(Category, {partial: true}),
-  //       },
-  //     },
-  //   })
-  //   category: Category,
-  // ): Promise<void> {
-  //   await this.categoryRepository.updateAll(category, {slug: slug});
-  // }
-
   @del('/categories/{slug}', {
     responses: {
       '204': {
@@ -170,26 +150,6 @@ export class CategoryController {
       slug: slug,
     });
   }
-
-  // @get('/categories/{id}', {
-  //   responses: {
-  //     '200': {
-  //       description: 'Category model instance',
-  //       content: {
-  //         'application/json': {
-  //           schema: getModelSchemaRef(Category, {includeRelations: true}),
-  //         },
-  //       },
-  //     },
-  //   },
-  // })
-  // async findById(
-  //   @param.path.number('id') id: number,
-  //   @param.filter(Category, {exclude: 'where'})
-  //   filter?: FilterExcludingWhere<Category>,
-  // ): Promise<Category> {
-  //   return this.categoryRepository.findById(id, filter);
-  // }
 
   @patch('/categories/{id}', {
     responses: {
@@ -208,8 +168,10 @@ export class CategoryController {
       },
     })
     category: Category,
-  ): Promise<void> {
+  ): Promise<Category> {
+    category.slug = generateSlug(category.title);
     await this.categoryRepository.updateById(id, category);
+    return this.categoryRepository.findById(id);
   }
 
   @put('/categories/{id}', {

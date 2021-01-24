@@ -27,7 +27,7 @@ import {
   CategoryRepository,
   ProductRepository,
 } from '../../repositories';
-import {getFilesAndFields} from '../../services';
+import {generateSlug, getFilesAndFields} from '../../services';
 import {FileUploadHandler} from '../../types';
 
 export class ProductController {
@@ -62,6 +62,7 @@ export class ProductController {
     })
     product: Omit<Product, 'id'>,
   ): Promise<Product> {
+    product.slug = generateSlug(product.title);
     return this.productRepository.create(product);
   }
 
@@ -224,6 +225,7 @@ export class ProductController {
     })
     product: Product,
   ): Promise<Product> {
+    product.slug = generateSlug(product.title);
     await this.productRepository.updateById(id, product);
     return this.productRepository.findById(id);
   }

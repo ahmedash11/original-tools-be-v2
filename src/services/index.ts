@@ -5,3 +5,4 @@
 
 export * from './file-fields.service';
 export * from './file-upload.service';
+export * from './generate-slug.service';

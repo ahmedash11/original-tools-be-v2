@@ -139,8 +139,9 @@ export class OfferController {
       },
     })
     offer: Offer,
-  ): Promise<void> {
+  ): Promise<Offer> {
     await this.offerRepository.updateById(id, offer);
+    return this.offerRepository.findById(id);
   }
 
   @put('/offers/{id}', {
