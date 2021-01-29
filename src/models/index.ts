@@ -18,3 +18,4 @@ export * from './quotation.model';
 export * from './request.model';
 export * from './order-product.model';
 export * from './ads.model';
+export * from './toolbar.model';

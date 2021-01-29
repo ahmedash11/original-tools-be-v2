@@ -32,5 +32,6 @@ export * from './request/request.controller';
 export * from './section/section-category.controller';
 export * from './section/section.controller';
 export * from './tag/tag.controller';
+export * from './toolbar/toolbar.controller';
 export * from './type/type.controller';
 export * from './user/user.controller';

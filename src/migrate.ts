@@ -20,6 +20,7 @@ export async function migrate(args: string[]) {
       'Product',
       'Tag',
       'Type',
+      'Toolbar',
       'User',
       'ProductTag',
       'ProductType',

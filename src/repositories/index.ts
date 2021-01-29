@@ -18,3 +18,4 @@ export * from './quotation.repository';
 export * from './request.repository';
 export * from './order-product.repository';
 export * from './ads.repository';
+export * from './toolbar.repository';
