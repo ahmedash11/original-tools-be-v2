@@ -27,7 +27,7 @@ import {
   CategoryRepository,
   ProductRepository,
 } from '../../repositories';
-import {generateSlug, getFilesAndFields} from '../../services';
+import {getFilesAndFields} from '../../services';
 import {FileUploadHandler} from '../../types';
 
 export class ProductController {
@@ -62,7 +62,7 @@ export class ProductController {
     })
     product: Omit<Product, 'id'>,
   ): Promise<Product> {
-    product.slug = generateSlug(product.title);
+    // product.slug = generateSlug(product.title);
     return this.productRepository.create(product);
   }
 
@@ -122,18 +122,12 @@ export class ProductController {
           parentId: category?.parentId || 0,
         },
       }),
-      this.categoryRepository.find({
-        where: {
-          parentId: undefined,
-        },
-        limit: 5,
-      }),
       this.productRepository.count(filter.where),
     ]).then(results => {
       return {
         items: results[0],
-        categories: [...results[1], ...results[2]],
-        total: results[3].count,
+        categories: [...results[1]],
+        total: results[2].count,
       };
     });
   }
@@ -225,7 +219,7 @@ export class ProductController {
     })
     product: Product,
   ): Promise<Product> {
-    product.slug = generateSlug(product.title);
+    // product.slug = generateSlug(product.title);
     await this.productRepository.updateById(id, product);
     return this.productRepository.findById(id);
   }
