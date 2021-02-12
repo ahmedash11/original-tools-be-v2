@@ -16,8 +16,8 @@ export async function getFilesAndFields(request: Request, folder: string) {
   });
   let files: object[] = [];
   if (Array.isArray(uploadedFiles)) {
-    let renamePromises: Promise<void>[] = [];
-    for (let file of uploadedFiles) {
+    const renamePromises: Promise<void>[] = [];
+    for (const file of uploadedFiles) {
       renamePromises.push(
         promises.rename(
           file.path,
