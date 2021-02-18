@@ -41,7 +41,7 @@ export class SearchController {
     const brandData = await this.brandRepository.find({ where: {or: [{title:{regexp: '[a-z]' || '[A-Z]'} }, {slug: {regexp: '[a-z]' || '[A-Z]'}}]}});
     const productData = await this.ProductRepository.find({ where:  {or: [{title:{regexp: '[a-z]' || '[A-Z]'} }, {slug: {regexp: '[a-z]' || '[A-Z]'}}]}});
     const subCateogryData = await this.CategoryRepository.find({ where: {or: [{title:{regexp: '[a-z]' || '[A-Z]'} }, {slug: {regexp: '[a-z]' || '[A-Z]'}}]}});
-    console.log(BrandRepository, ProductRepository, CategoryRepository)
+
     return {"brands": brandData, productData, subCateogryData}
   }
 }
