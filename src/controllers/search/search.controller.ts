@@ -1,15 +1,10 @@
 import {repository} from '@loopback/repository';
+import {get, param, response} from '@loopback/rest';
 import {
-  get,
-  param,
-
-
-
-
-  response
-} from '@loopback/rest';
-import {BrandRepository, CategoryRepository, ProductRepository} from '../../repositories';
-
+  BrandRepository,
+  CategoryRepository,
+  ProductRepository
+} from '../../repositories';
 
 export class SearchController {
   constructor(
@@ -18,30 +13,35 @@ export class SearchController {
     @repository(ProductRepository)
     public ProductRepository: ProductRepository,
     @repository(CategoryRepository)
-    public CategoryRepository: CategoryRepository
-  ) { }
+    public CategoryRepository: CategoryRepository,
+  ) {}
 
-
-
-  @get('/search/{search}')
+  @get('/search')
   @response(200, {
     description: 'Array of Brand model instances',
     content: {
       'application/json': {
         schema: {
-          type: 'object'
+          type: 'object',
         },
       },
     },
   })
-  async find(
-     @param.path.string('search') search: string,
-  ) {
+  async find(@param.query.string('search') search: string) {
+    let filter = {like: `%${search}%`};
+    if (!search) {
+      search = '';
+    }
+    let searchTerm = {
+      where: {
+        or: [{title: filter}, {slug: filter}],
+        limit: 50,
+      },
+    };
+    const brandData = await this.brandRepository.find(searchTerm);
+    const productData = await this.ProductRepository.find(searchTerm);
+    const subCateogryData = await this.CategoryRepository.find(searchTerm);
 
-    const brandData = await this.brandRepository.find({ where: {or: [{title:{regexp: '[a-z]' || '[A-Z]'} }, {slug: {regexp: '[a-z]' || '[A-Z]'}}]}});
-    const productData = await this.ProductRepository.find({ where:  {or: [{title:{regexp: '[a-z]' || '[A-Z]'} }, {slug: {regexp: '[a-z]' || '[A-Z]'}}]}});
-    const subCateogryData = await this.CategoryRepository.find({ where: {or: [{title:{regexp: '[a-z]' || '[A-Z]'} }, {slug: {regexp: '[a-z]' || '[A-Z]'}}]}});
-
-    return {"brands": brandData, productData, subCateogryData}
+    return {brands: brandData, productData, subCateogryData};
   }
 }
