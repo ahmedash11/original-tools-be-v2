@@ -42,6 +42,6 @@ export class SearchController {
     const productData = await this.ProductRepository.find(searchTerm);
     const subCateogryData = await this.CategoryRepository.find(searchTerm);
 
-    return {brands: brandData, productData, subCateogryData};
+    return {brands: [brandData, productData, subCateogryData]};
   }
 }
