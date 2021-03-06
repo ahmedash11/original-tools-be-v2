@@ -32,16 +32,14 @@ export class SearchController {
     if (!search) {
       search = '';
     }
-    let searchTerm = {
-      where: {
-        or: [{title: filter}, {slug: filter}],
-        limit: 50,
-      },
-    };
+    let searchTerm = {where: {title: filter}, limit: 5};
+
     const brandData = await this.brandRepository.find(searchTerm);
     const productData = await this.ProductRepository.find(searchTerm);
-    const subCateogryData = await this.CategoryRepository.find(searchTerm);
+    const CateogryData = await this.CategoryRepository.find(searchTerm);
 
-    return {brands: [brandData, productData, subCateogryData]};
+    const result = {brandData, productData, CateogryData};
+
+    return result;
   }
 }
