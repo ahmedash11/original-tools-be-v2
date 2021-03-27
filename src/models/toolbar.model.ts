@@ -26,6 +26,12 @@ export class Toolbar extends Entity {
   })
   order?: number;
 
+  @property({
+    type: 'boolean',
+    default: false,
+  })
+  isBlog: boolean;
+
   constructor(data?: Partial<Toolbar>) {
     super(data);
   }
