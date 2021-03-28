@@ -1,4 +1,5 @@
-import {Entity, model, property} from '@loopback/repository';
+import {Entity, hasMany, model, property} from '@loopback/repository';
+import {Shop} from './marketPlace/shop.model';
 
 @model()
 export class User extends Entity {
@@ -31,6 +32,9 @@ export class User extends Entity {
     type: 'string',
   })
   img?: string;
+
+  @hasMany(() => Shop)
+  Shop: Shop[];
 
   constructor(data?: Partial<User>) {
     super(data);
