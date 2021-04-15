@@ -32,7 +32,6 @@ import {
 const MerchantCode = process.env.MERCHANTCODE;
 const MerchantHashCode = process.env.MERCHANTHASHCODE;
 const Token = process.env.TOKEN;
-const tokenTest = process.env.STAGINGTOKEN;
 
 const AXIOS_BASE_URL = 'https://cowpay.me/api/v1';
 export class OrderController {
@@ -135,7 +134,7 @@ export class OrderController {
         let creditCardStatus;
         const options = {
           headers: {
-            Authorization: `Bearer ${tokenTest}`,
+            Authorization: `Bearer ${Token}`,
             'Content-Type': 'application/json',
             Accept: 'application/json',
           },
@@ -176,7 +175,7 @@ export class OrderController {
         let fawryStatus;
         const options = {
           headers: {
-            Authorization: `Bearer ${tokenTest}`,
+            Authorization: `Bearer ${Token}`,
             Accept: 'application/json',
             'Content-Type': 'application/json',
           },
@@ -187,11 +186,9 @@ export class OrderController {
             fawryData,
             options,
           );
-          console.log(fawryResp);
           fawryStatus = await this.getPaymentStatus(
             fawryData.merchant_reference_id,
           );
-          console.log(fawryStatus);
         } catch (err) {
           // Handle Error Here
           console.error(err);
@@ -347,7 +344,7 @@ export class OrderController {
       },
       headers: {
         Accept: 'application/json',
-        Authorization: `Bearer ${tokenTest}`,
+        Authorization: `Bearer ${Token}`,
       },
     });
   }
