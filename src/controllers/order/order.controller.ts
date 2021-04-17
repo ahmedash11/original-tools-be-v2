@@ -94,6 +94,22 @@ export class OrderController {
         creditCard,
         paymentMethod,
       } = order;
+
+      let creditCardResp: any;
+      let creditCardStatus;
+      let fawryResp;
+      let fawryStatus;
+      let creditCardData;
+      let fawryData;
+
+      const options = {
+        headers: {
+          Authorization: `Bearer ${Token}`,
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+      };
+
       const customerData = await this.customerRepository.create(customer);
       await this.addressRepository.create(address);
       let orderData = {
@@ -107,7 +123,7 @@ export class OrderController {
       );
 
       if (paymentMethod === 'creditcard') {
-        let creditCardData = {
+        creditCardData = {
           merchant_reference_id: newOrder.id?.toString(),
           customer_merchant_profile_id: orderData.customerId?.toString(),
           card_number: creditCard.card_number.replace(/ /g, ''),
@@ -130,30 +146,21 @@ export class OrderController {
           ),
         };
 
-        let creditCardResp;
-        let creditCardStatus;
-        const options = {
-          headers: {
-            Authorization: `Bearer ${Token}`,
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-          },
-        };
+
         try {
           creditCardResp = await axios.post(
             `${AXIOS_BASE_URL}/charge/card`,
             creditCardData,
             options,
           );
-          creditCardStatus = await this.getPaymentStatus(
-            creditCardData.merchant_reference_id,
-          );
+          return creditCardResp.data;
         } catch (err) {
           // Handle Error Here
           console.error(err);
         }
+
       } else if (paymentMethod === 'fawry') {
-        let fawryData = {
+        fawryData = {
           merchant_reference_id: newOrder.id?.toString(),
           customer_merchant_profile_id: orderData.customerId?.toString(),
           customer_name: customer.firstName,
@@ -171,15 +178,7 @@ export class OrderController {
             ].join(''),
           ),
         };
-        let fawryResp;
-        let fawryStatus;
-        const options = {
-          headers: {
-            Authorization: `Bearer ${Token}`,
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        };
+
         try {
           fawryResp = await axios.post(
             `${AXIOS_BASE_URL}/charge/fawry`,

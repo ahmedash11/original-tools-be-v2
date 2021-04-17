@@ -15,7 +15,6 @@ import path from 'path';
 import {FILE_UPLOAD_SERVICE, STORAGE_DIRECTORY} from './keys';
 import {MySequence} from './sequence';
 
-
 export {ApplicationConfig};
 
 export class TestApp extends BootMixin(
@@ -24,9 +23,7 @@ export class TestApp extends BootMixin(
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
-    dotenv.config({ path: '.env' });
-  console.log({process:process.env.MerchantCode});
-
+    dotenv.config({path: '.env'});
 
     // Set up the custom sequence
     this.sequence(MySequence);
