@@ -31,9 +31,10 @@ import {
 
 const MerchantCode = process.env.MERCHANTCODE;
 const MerchantHashCode = process.env.MERCHANTHASHCODE;
-const Token = process.env.TOKEN;
+// const Token = process.env.TOKEN;
+const stagingToken = process.env.STAGINGTOKEN;
 
-const AXIOS_BASE_URL = 'https://cowpay.me/api/v1';
+const AXIOS_BASE_URL = 'https://staging.cowpay.me/api/v1';
 export class OrderController {
   constructor(
     @inject('datasources.db') private dataSource: DbDataSource,
@@ -104,7 +105,7 @@ export class OrderController {
 
       const options = {
         headers: {
-          Authorization: `Bearer ${Token}`,
+          Authorization: `Bearer ${stagingToken}`,
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
@@ -146,7 +147,6 @@ export class OrderController {
           ),
         };
 
-
         try {
           creditCardResp = await axios.post(
             `${AXIOS_BASE_URL}/charge/card`,
@@ -158,7 +158,6 @@ export class OrderController {
           // Handle Error Here
           console.error(err);
         }
-
       } else if (paymentMethod === 'fawry') {
         fawryData = {
           merchant_reference_id: newOrder.id?.toString(),
@@ -343,7 +342,7 @@ export class OrderController {
       },
       headers: {
         Accept: 'application/json',
-        Authorization: `Bearer ${Token}`,
+        Authorization: `Bearer ${stagingToken}`,
       },
     });
   }
