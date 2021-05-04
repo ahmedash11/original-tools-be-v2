@@ -32,6 +32,8 @@ export * from './request/request-product.controller';
 export * from './request/request.controller';
 export * from './section/section-category.controller';
 export * from './section/section.controller';
+export * from './shop/shop-contoller.controller';
+export * from './shop/shop-product-contoller.controller';
 export * from './tag/tag.controller';
 export * from './toolbar/toolbar.controller';
 export * from './type/type.controller';

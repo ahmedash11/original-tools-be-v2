@@ -11,15 +11,15 @@ import {User} from './user.model';
 
 @model({
   settings: {
-    // foreignKeys: {
-    //   fk_shop_userId: {
-    //     name: 'fk_address_areaId',
-    //     entity: 'User',
-    //     entityKey: 'id',
-    //     foreignKey: 'userId',
-    //     onDelete: 'restrict',
-    //   },
-    // },
+    foreignKeys: {
+      fk_shop_userId: {
+        name: 'fk_address_areaId',
+        entity: 'User',
+        entityKey: 'id',
+        foreignKey: 'userId',
+        onDelete: 'restrict',
+      },
+    },
   },
 })
 export class Shops extends Entity {
