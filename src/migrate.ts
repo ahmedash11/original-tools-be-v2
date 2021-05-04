@@ -30,6 +30,9 @@ export async function migrate(args: string[]) {
       'OrderProduct',
       'Quotation',
       'Request',
+      'UserCredentials',
+      'Shops',
+      'ProductShop',
     ],
   });
 

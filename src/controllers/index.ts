@@ -23,6 +23,7 @@ export * from './order/order-product.controller';
 export * from './order/order.controller';
 export * from './product/product-brand.controller';
 export * from './product/product-category.controller';
+export * from './product/product-shops.controller';
 export * from './product/product-tag.controller';
 export * from './product/product-type.controller';
 export * from './product/product.controller';

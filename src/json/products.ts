@@ -1,2 +1,2 @@
 import prds from './data/prd2.json';
-export const Products = prds;
+export const Products: any = prds;
