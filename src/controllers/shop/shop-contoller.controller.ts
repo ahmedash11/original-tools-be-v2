@@ -91,7 +91,7 @@ export class ShopContollerController {
     return this.shopsRepository.updateAll(shops, where);
   }
 
-  @get('/shops/{id}')
+  @get('/shops/{slug}')
   @response(200, {
     description: 'Shops model instance',
     content: {
@@ -101,11 +101,16 @@ export class ShopContollerController {
     },
   })
   async findById(
-    @param.path.number('id') id: number,
+    @param.path.string('slug') slug: string,
     @param.filter(Shops, {exclude: 'where'})
     filter?: FilterExcludingWhere<Shops>,
-  ): Promise<Shops> {
-    return this.shopsRepository.findById(id, filter);
+  ): Promise<Shops | null> {
+    return this.shopsRepository.findOne({
+      where: {
+        slug: slug,
+      },
+      ...filter,
+    });
   }
 
   @patch('/shops/{id}')
