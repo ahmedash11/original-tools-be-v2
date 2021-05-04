@@ -34,17 +34,22 @@ export class Shops extends Entity {
     type: 'string',
     required: true,
   })
-  shopName: string;
+  name: string;
 
   @property({
     type: 'string',
   })
-  shopDescription?: string;
+  description?: string;
 
   @property({
     type: 'string',
   })
-  shopImg?: string;
+  Img?: string;
+
+  @property({
+    type: 'string',
+  })
+  slug: string;
 
   @belongsTo(() => User)
   userId: number;
