@@ -20,7 +20,7 @@ import {
 import {Shops} from '../../models';
 import {ShopsRepository} from '../../repositories';
 
-export class ShopContollerController {
+export class ShopContoller {
   constructor(
     @repository(ShopsRepository)
     public shopsRepository: ShopsRepository,
@@ -100,7 +100,7 @@ export class ShopContollerController {
       },
     },
   })
-  async findById(
+  async findBySlug(
     @param.path.string('slug') slug: string,
     @param.filter(Shops, {exclude: 'where'})
     filter?: FilterExcludingWhere<Shops>,
@@ -109,7 +109,11 @@ export class ShopContollerController {
       where: {
         slug: slug,
       },
-      ...filter,
+      include: [
+        {
+          relation: 'products',
+        },
+      ],
     });
   }
 
