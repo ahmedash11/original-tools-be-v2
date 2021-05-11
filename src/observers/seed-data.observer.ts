@@ -14,7 +14,15 @@ import {
   Sections,
   Tags,
 } from '../json';
-import {Brand, Category, Product, ProductTag, Tag, User} from '../models';
+import {
+  Brand,
+  Category,
+  Product,
+  ProductTag,
+  Tag,
+  User,
+  UserCredentials,
+} from '../models';
 import {
   BrandRepository,
   CategoryRepository,
@@ -79,7 +87,24 @@ export class SeedDataObserver implements LifeCycleObserver {
           }),
       );
       const products = Products.map(
-        x =>
+        (x: {
+          id: number;
+          title: string;
+          description: string;
+          img: string;
+          price: number;
+          techInfo: string;
+          content: string;
+          slug: string;
+          url: string;
+          addings: string;
+          cost: number;
+          quantity: number;
+          categoryId: number;
+          brandId: number;
+          model: string;
+          views: number;
+        }) =>
           new Product({
             id: x.id,
             title: x.title,
@@ -116,9 +141,14 @@ export class SeedDataObserver implements LifeCycleObserver {
             tagId: x.tagId,
           }),
       );
-      const admin = new User({
+      const owner = new User({
         name: 'Ibrahim Rashad',
         email: 'ibrahim@etools.com',
+        role: 'super-admin',
+      });
+
+      const ownerPass = new UserCredentials({
+        userId: '1',
         password: await hash('test1234', await genSalt()),
       });
       Sections;

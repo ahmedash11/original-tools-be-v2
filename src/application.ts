@@ -1,19 +1,38 @@
-import {AuthenticationComponent} from '@loopback/authentication';
-import {JWTAuthenticationComponent} from '@loopback/authentication-jwt';
+import {
+  AuthenticationComponent,
+  registerAuthenticationStrategy,
+} from '@loopback/authentication';
+import {
+  JWTAuthenticationComponent,
+  JWTAuthenticationStrategy,
+  JWTService,
+  MyUserService,
+  SECURITY_SCHEME_SPEC,
+  TokenServiceBindings,
+  TokenServiceConstants,
+  UserServiceBindings,
+} from '@loopback/authentication-jwt';
+import {AuthorizationComponent} from '@loopback/authorization';
 import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig} from '@loopback/core';
+import {ApplicationConfig, createBindingFromClass} from '@loopback/core';
 import {RepositoryMixin} from '@loopback/repository';
-import {RestApplication, RestBindings} from '@loopback/rest';
+import {OpenApiSpec, RestApplication, RestBindings} from '@loopback/rest';
 import {
   RestExplorerBindings,
-  RestExplorerComponent
+  RestExplorerComponent,
 } from '@loopback/rest-explorer';
 import {ServiceMixin} from '@loopback/service-proxy';
 import * as dotenv from 'dotenv';
 import multer from 'multer';
 import path from 'path';
-import {FILE_UPLOAD_SERVICE, STORAGE_DIRECTORY} from './keys';
+import {
+  FILE_UPLOAD_SERVICE,
+  PasswordHasherBindings,
+  STORAGE_DIRECTORY,
+} from './keys';
 import {MySequence} from './sequence';
+import {BcryptHasher} from './services';
+import {SECURITY_SPEC} from './utils/security-spec';
 
 export {ApplicationConfig};
 
@@ -41,9 +60,13 @@ export class TestApp extends BootMixin(
     });
     this.component(RestExplorerComponent);
 
+    this.component(AuthorizationComponent);
     this.component(AuthenticationComponent);
     // Mount jwt component
     this.component(JWTAuthenticationComponent);
+
+    this.add(createBindingFromClass(JWTAuthenticationStrategy));
+    registerAuthenticationStrategy(this, JWTAuthenticationStrategy);
 
     // Configure file upload with multer options
     this.configureFileUpload(options.fileStorageDirectory);
@@ -58,6 +81,18 @@ export class TestApp extends BootMixin(
         nested: true,
       },
     };
+
+    this.setUpBindings();
+
+    const spec: OpenApiSpec = {
+      openapi: '3.0.0',
+      info: {title: 'pkg.name', version: 'pkg.version'},
+      paths: {},
+      components: {securitySchemes: SECURITY_SCHEME_SPEC},
+      servers: [{url: '/api'}],
+      security: SECURITY_SPEC,
+    };
+    this.api(spec);
   }
   /**
    * Configure `multer` options for file upload
@@ -80,5 +115,26 @@ export class TestApp extends BootMixin(
     };
     // Configure the file upload service with multer options
     this.configure(FILE_UPLOAD_SERVICE).to(multerOptions);
+  }
+
+  private setUpBindings(): void {
+    // Bind package.json to the application context
+    // this.bind(PackageKey).to(pkg);
+
+    this.bind(TokenServiceBindings.TOKEN_SECRET).to(
+      TokenServiceConstants.TOKEN_SECRET_VALUE,
+    );
+
+    this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
+      TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
+    );
+
+    this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
+
+    // Bind bcrypt hash services
+    this.bind(PasswordHasherBindings.ROUNDS).to(10);
+    this.bind(PasswordHasherBindings.PASSWORD_HASHER).toClass(BcryptHasher);
+    // Bind user service
+    this.bind(UserServiceBindings.USER_SERVICE).toClass(MyUserService);
   }
 }
