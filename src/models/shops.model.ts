@@ -13,7 +13,7 @@ import {User} from './user.model';
   settings: {
     foreignKeys: {
       fk_shop_userId: {
-        name: 'fk_address_areaId',
+        name: 'fk_shop_userId',
         entity: 'User',
         entityKey: 'id',
         foreignKey: 'userId',
@@ -28,7 +28,7 @@ export class Shops extends Entity {
     id: true,
     generated: true,
   })
-  id?: number;
+  id: number;
 
   @property({
     type: 'string',

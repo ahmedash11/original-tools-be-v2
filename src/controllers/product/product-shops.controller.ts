@@ -23,7 +23,7 @@ export class ShopsProductController {
     @repository(ShopsRepository) protected shopsRepository: ShopsRepository,
   ) {}
 
-  @get('/shops/{id}/products', {
+  @get('/shops/{slug}/products', {
     responses: {
       '200': {
         description: 'Array of Shops has many Product through ProductShop',
@@ -36,10 +36,17 @@ export class ShopsProductController {
     },
   })
   async find(
-    @param.path.number('id') id: number,
+    @param.path.string('slug') slug: string,
     @param.query.object('filter') filter?: Filter<Product>,
   ): Promise<Product[]> {
-    return this.shopsRepository.products(id).find(filter);
+    const shop = await this.shopsRepository.findOne({
+      where: {
+        slug: slug,
+      },
+    });
+    return shop
+      ? await this.shopsRepository.products(shop.id).find(filter)
+      : [];
   }
 
   @post('/shops/{id}/products', {

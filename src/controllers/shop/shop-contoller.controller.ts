@@ -109,11 +109,6 @@ export class ShopContoller {
       where: {
         slug: slug,
       },
-      include: [
-        {
-          relation: 'products',
-        },
-      ],
     });
   }
 
