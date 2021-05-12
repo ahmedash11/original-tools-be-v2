@@ -44,7 +44,7 @@ export class Shops extends Entity {
   @property({
     type: 'string',
   })
-  Img?: string;
+  img?: string;
 
   @property({
     type: 'string',
