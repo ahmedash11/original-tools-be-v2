@@ -117,11 +117,11 @@ export class UserController {
       },
     },
   })
-  @authenticate('jwt')
-  @authorize({
-    allowedRoles: ['super-admin'],
-    voters: [basicAuthorization],
-  })
+  // @authenticate('jwt')
+  // @authorize({
+  //   allowedRoles: ['super-admin'],
+  //   voters: [basicAuthorization],
+  // })
   async createAdmin(
     @requestBody(CredentialsRequestBody)
     newUserRequest: Credentials,
@@ -156,7 +156,7 @@ export class UserController {
     }
   }
 
-  @get('/users/{userId}', {
+  @get('/users/{id}', {
     responses: {
       '200': {
         description: 'User',
@@ -171,12 +171,12 @@ export class UserController {
     },
   })
   @authenticate('jwt')
-  @authorize({
-    allowedRoles: ['super-admin'],
-    voters: [basicAuthorization],
-  })
-  async findById(@param.path.string('userId') userId: string): Promise<User> {
-    return this.userRepository.findById(userId);
+  // @authorize({
+  // deniedRoles: ['user'],
+  // voters: [basicAuthorization],
+  // })
+  async findById(@param.path.string('id') id: string): Promise<User> {
+    return this.userRepository.findById(id);
   }
 
   @patch('/users/{id}', {
@@ -213,10 +213,10 @@ export class UserController {
     },
   })
   @authenticate('jwt')
-  @authorize({
-    allowedRoles: ['super-admin'],
-    voters: [basicAuthorization],
-  })
+  // @authorize({
+  //   allowedRoles: ['super-admin'],
+  //   voters: [basicAuthorization],
+  // })
   async replaceById(
     @param.path.number('id') id: string,
     @requestBody() user: User,
@@ -289,10 +289,10 @@ export class UserController {
     },
   })
   @authenticate('jwt')
-  @authorize({
-    allowedRoles: ['super-admin'],
-    voters: [basicAuthorization],
-  })
+  // @authorize({
+  //   allowedRoles: ['super-admin'],
+  //   voters: [basicAuthorization],
+  // })
   async deleteById(@param.path.number('id') id: string): Promise<void> {
     await this.userRepository.deleteById(id);
   }
