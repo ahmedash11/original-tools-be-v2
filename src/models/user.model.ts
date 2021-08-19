@@ -9,7 +9,7 @@ export class User extends Entity {
     generated: true,
     id: true,
   })
-  id: string;
+  id: number;
 
   @property({
     type: 'string',

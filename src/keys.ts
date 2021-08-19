@@ -24,7 +24,7 @@ export const STORAGE_DIRECTORY = BindingKey.create<string>('storage.directory');
 
 export namespace TokenServiceConstants {
   export const TOKEN_SECRET_VALUE = 'myjwts3cr3t';
-  export const TOKEN_EXPIRES_IN_VALUE = '36000';
+  export const TOKEN_EXPIRES_IN_VALUE = '172800000604,800,000'; // 7 Days
 }
 
 export namespace TokenServiceBindings {

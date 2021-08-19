@@ -3,13 +3,11 @@ import {
   TokenService,
   UserService,
 } from '@loopback/authentication';
-import {authorize} from '@loopback/authorization';
 import {inject} from '@loopback/core';
 import {model, property, repository} from '@loopback/repository';
 import {
   del,
   get,
-  getModelSchemaRef,
   HttpErrors,
   param,
   patch,
@@ -24,7 +22,6 @@ import {
   TokenServiceBindings,
   UserServiceBindings,
 } from '../../keys';
-import {basicAuthorization} from '../../middlewares/auth.midd';
 import {User} from '../../models';
 import {Credentials, UserRepository} from '../../repositories';
 import {PasswordHasher, validateCredentials} from '../../services';
@@ -41,6 +38,41 @@ export class NewUserRequest extends User {
   })
   password: string;
 }
+
+// TBD: refactor the ACLs to a separate file
+// const RESOURCE_NAME = 'project';
+// const ACL_PROJECT = {
+//   'signup-admin': {
+//     resource: RESOURCE_NAME,
+//     scopes: ['signup-admin'],
+//     allowedRoles: ['owner'],
+//     voters: [basicAuthorization],
+//   },
+//   'get-user-byId': {
+//     resource: RESOURCE_NAME,
+//     scopes: ['get-user-byId'],
+//     allowedRoles: ['owner'],
+//     voters: [basicAuthorization],
+//   },
+//   'patch-user-byId': {
+//     resource: RESOURCE_NAME,
+//     scopes: ['patch-user-byId'],
+//     allowedRoles: ['owner'],
+//     voters: [basicAuthorization],
+//   },
+//   'put-user-byId': {
+//     resource: RESOURCE_NAME,
+//     scopes: ['put-user-byId'],
+//     allowedRoles: ['owner'],
+//     voters: [basicAuthorization],
+//   },
+//   'delete-user-byId': {
+//     resource: RESOURCE_NAME,
+//     scopes: ['delete-user-byId'],
+//     allowedRoles: ['owner'],
+//     voters: [basicAuthorization],
+//   },
+// };
 
 export class UserController {
   constructor(
@@ -117,15 +149,20 @@ export class UserController {
       },
     },
   })
-  // @authenticate('jwt')
+  @authenticate('jwt')
   // @authorize({
-  //   allowedRoles: ['super-admin'],
+  //   allowedRoles: ['owner'],
   //   voters: [basicAuthorization],
   // })
   async createAdmin(
     @requestBody(CredentialsRequestBody)
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     newUserRequest: Credentials,
   ): Promise<User> {
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
     // ensure a valid email value and password value
     validateCredentials(_.pick(newUserRequest, ['email', 'password']));
 
@@ -145,7 +182,11 @@ export class UserController {
         .userCredentials(savedUser.id)
         .create({password});
 
-      return savedUser;
+      if ((await currenrUser).role == 'owner') {
+        return savedUser;
+      } else {
+        throw new HttpErrors.Forbidden('acces denied');
+      }
     } catch (error) {
       // MongoError 11000 duplicate key
       if (error.code === 11000 && error.errmsg.includes('index: uniqueEmail')) {
@@ -175,7 +216,7 @@ export class UserController {
   // deniedRoles: ['user'],
   // voters: [basicAuthorization],
   // })
-  async findById(@param.path.string('id') id: string): Promise<User> {
+  async findById(@param.path.string('id') id: number): Promise<User> {
     return this.userRepository.findById(id);
   }
 
@@ -183,26 +224,33 @@ export class UserController {
     responses: {
       '204': {
         description: 'User PATCH success',
+        content: {
+          'application/json': {
+            schema: UserProfileSchema,
+          },
+        },
       },
     },
   })
   @authenticate('jwt')
-  @authorize({
-    allowedRoles: ['super-admin'],
-    voters: [basicAuthorization],
-  })
-  async updateById(
-    @param.path.number('id') id: string,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(User, {partial: true}),
-        },
-      },
-    })
-    user: User,
+  async UpdateById(
+    @param.path.number('id') id: number,
+    @requestBody() user: User,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
   ): Promise<void> {
-    await this.userRepository.updateById(id, user);
+    try {
+      const userId = currentUserProfile[securityId];
+      const currenrUser = this.userRepository.findById(userId);
+      const updateUser = this.userRepository.updateById(id, user);
+      if ((await currenrUser).role == 'owner') {
+        updateUser;
+      } else {
+        throw new HttpErrors.Forbidden('acces denied');
+      }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   @put('/users/{id}', {
@@ -214,14 +262,27 @@ export class UserController {
   })
   @authenticate('jwt')
   // @authorize({
-  //   allowedRoles: ['super-admin'],
+  //   allowedRoles: ['owner'],
   //   voters: [basicAuthorization],
   // })
   async replaceById(
-    @param.path.number('id') id: string,
+    @param.path.number('id') id: number,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     @requestBody() user: User,
   ): Promise<void> {
-    await this.userRepository.replaceById(id, user);
+    try {
+      const userId = currentUserProfile[securityId];
+      const currenrUser = this.userRepository.findById(userId);
+      const replaceUser = this.userRepository.replaceById(id, user);
+      if ((await currenrUser).role == 'owner') {
+        replaceUser;
+      } else {
+        throw new HttpErrors.Forbidden('acces denied');
+      }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   @get('/users/me', {
@@ -290,10 +351,25 @@ export class UserController {
   })
   @authenticate('jwt')
   // @authorize({
-  //   allowedRoles: ['super-admin'],
+  //   allowedRoles: ['owner'],
   //   voters: [basicAuthorization],
   // })
-  async deleteById(@param.path.number('id') id: string): Promise<void> {
-    await this.userRepository.deleteById(id);
+  async deleteById(
+    @param.path.number('id') id: number,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+  ): Promise<void> {
+    try {
+      const userId = currentUserProfile[securityId];
+      const currenrUser = this.userRepository.findById(userId);
+      const deleteUser = this.userRepository.deleteById(id);
+      if ((await currenrUser).role == 'owner') {
+        deleteUser;
+      } else {
+        throw new HttpErrors.Forbidden('acces denied');
+      }
+    } catch (err) {
+      console.log(err);
+    }
   }
 }
