@@ -135,7 +135,7 @@ export class UserController {
     }
   }
 
-  @post('/users/sign-up/admin', {
+  @post('/users/sign-up/merchant', {
     responses: {
       '200': {
         description: 'User',
@@ -160,6 +160,7 @@ export class UserController {
     currentUserProfile: UserProfile,
     newUserRequest: Credentials,
   ): Promise<User> {
+    newUserRequest.role = 'merchant';
     // current user to ensure just the owner have acsess here
     const userId = currentUserProfile[securityId];
     const currenrUser = this.userRepository.findById(userId);
