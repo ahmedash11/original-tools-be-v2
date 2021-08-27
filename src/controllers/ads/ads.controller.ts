@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {
   Count,
@@ -11,6 +12,7 @@ import {
   del,
   get,
   getModelSchemaRef,
+  HttpErrors,
   param,
   patch,
   post,
@@ -20,15 +22,17 @@ import {
   Response,
   RestBindings,
 } from '@loopback/rest';
+import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {FILE_UPLOAD_SERVICE} from '../../keys';
 import {Ads} from '../../models';
 import {getFilesAndFields} from '../../services';
 import {FileUploadHandler} from '../../types';
-import {AdsRepository} from './../../repositories';
+import {AdsRepository, UserRepository} from './../../repositories';
 
 export class AdsController {
   constructor(
     @inject(FILE_UPLOAD_SERVICE) private handler: FileUploadHandler,
+    @repository(UserRepository) public userRepository: UserRepository,
     @repository(AdsRepository)
     public adsRepository: AdsRepository,
   ) {}
@@ -41,6 +45,7 @@ export class AdsController {
       },
     },
   })
+  @authenticate('jwt')
   async create(
     @requestBody({
       content: {
@@ -52,9 +57,18 @@ export class AdsController {
         },
       },
     })
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     ads: Omit<Ads, 'id'>,
   ): Promise<Ads> {
-    return this.adsRepository.create(ads);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      return this.adsRepository.create(ads);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @get('/ads/count', {
@@ -143,19 +157,30 @@ export class AdsController {
       },
     },
   })
+  @authenticate('jwt')
   async fileUpload(
     @requestBody.file()
+    currentUserProfile: UserProfile,
     request: Request,
-    @inject(RestBindings.Http.RESPONSE) response: Response,
+    @inject(RestBindings.Http.RESPONSE)
+    response: Response,
   ): Promise<object> {
-    return new Promise<object>((resolve, reject) => {
-      this.handler(request, response, (err: unknown) => {
-        if (err) reject(err);
-        else {
-          resolve(getFilesAndFields(request, 'ads'));
-        }
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+
+    if ((await currenrUser).role == 'owner') {
+      return new Promise<object>((resolve, reject) => {
+        this.handler(request, response, (err: unknown) => {
+          if (err) reject(err);
+          else {
+            resolve(getFilesAndFields(request, 'ads'));
+          }
+        });
       });
-    });
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @patch('/ads/{id}', {
@@ -165,6 +190,7 @@ export class AdsController {
       },
     },
   })
+  @authenticate('jwt')
   async updateById(
     @param.path.number('id') id: number,
     @requestBody({
@@ -175,9 +201,25 @@ export class AdsController {
       },
     })
     ads: Ads,
-  ): Promise<Ads> {
-    await this.adsRepository.updateById(id, ads);
-    return this.adsRepository.findById(id);
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+  ): Promise<Ads | undefined> {
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    try {
+      await this.adsRepository.updateById(id, ads);
+
+      if ((await currenrUser).role == 'owner') {
+        await this.adsRepository.updateById(id, ads);
+
+        return this.adsRepository.findById(id);
+      } else {
+        throw new HttpErrors.Forbidden('acces denied');
+      }
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   @put('/ads/{id}', {
@@ -187,11 +229,21 @@ export class AdsController {
       },
     },
   })
+  @authenticate('jwt')
   async replaceById(
     @param.path.number('id') id: number,
     @requestBody() ads: Ads,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
   ): Promise<void> {
-    await this.adsRepository.replaceById(id, ads);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      await this.adsRepository.replaceById(id, ads);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @del('/ads/{id}', {
@@ -201,7 +253,19 @@ export class AdsController {
       },
     },
   })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.adsRepository.deleteById(id);
+  @authenticate('jwt')
+  async deleteById(
+    @param.path.number('id') id: number,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+  ): Promise<void> {
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      await this.adsRepository.deleteById(id);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 }

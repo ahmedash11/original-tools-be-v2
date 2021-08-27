@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {
   Count,
@@ -11,6 +12,7 @@ import {
   del,
   get,
   getModelSchemaRef,
+  HttpErrors,
   param,
   patch,
   post,
@@ -20,14 +22,16 @@ import {
   Response,
   RestBindings,
 } from '@loopback/rest';
+import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {FILE_UPLOAD_SERVICE} from '../../keys';
 import {Brand} from '../../models';
-import {BrandRepository} from '../../repositories';
+import {BrandRepository, UserRepository} from '../../repositories';
 import {generateSlug, getFilesAndFields} from '../../services';
 import {FileUploadHandler} from '../../types';
 export class BrandController {
   constructor(
     @inject(FILE_UPLOAD_SERVICE) private handler: FileUploadHandler,
+    @repository(UserRepository) public userRepository: UserRepository,
     @repository(BrandRepository)
     public brandRepository: BrandRepository,
   ) {}
@@ -40,6 +44,7 @@ export class BrandController {
       },
     },
   })
+  @authenticate('jwt')
   async create(
     @requestBody({
       content: {
@@ -52,9 +57,19 @@ export class BrandController {
       },
     })
     brand: Omit<Brand, 'id'>,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
   ): Promise<Brand> {
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
     brand.slug = generateSlug(brand.title);
-    return this.brandRepository.create(brand);
+
+    if ((await currenrUser).role == 'owner') {
+      return this.brandRepository.create(brand);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @get('/brands/count', {
@@ -96,6 +111,7 @@ export class BrandController {
       },
     },
   })
+  @authenticate('jwt')
   async updateAll(
     @requestBody({
       content: {
@@ -104,10 +120,20 @@ export class BrandController {
         },
       },
     })
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     brand: Brand,
     @param.where(Brand) where?: Where<Brand>,
   ): Promise<Count> {
-    return this.brandRepository.updateAll(brand, where);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+
+    if ((await currenrUser).role == 'owner') {
+      return this.brandRepository.updateAll(brand, where);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @get('/brands/{slug}', {
@@ -143,6 +169,7 @@ export class BrandController {
       },
     },
   })
+  @authenticate('jwt')
   async updateById(
     @param.path.number('id') id: number,
     @requestBody({
@@ -152,11 +179,20 @@ export class BrandController {
         },
       },
     })
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     brand: Brand,
   ): Promise<Brand> {
-    brand.slug = generateSlug(brand.title);
-    await this.brandRepository.updateById(id, brand);
-    return this.brandRepository.findById(id);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      brand.slug = generateSlug(brand.title);
+      await this.brandRepository.updateById(id, brand);
+      return this.brandRepository.findById(id);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @put('/brands/{id}', {
@@ -166,11 +202,21 @@ export class BrandController {
       },
     },
   })
+  @authenticate('jwt')
   async replaceById(
     @param.path.number('id') id: number,
     @requestBody() brand: Brand,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
   ): Promise<void> {
-    await this.brandRepository.replaceById(id, brand);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      await this.brandRepository.replaceById(id, brand);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @post('/brands/upload', {
@@ -187,19 +233,29 @@ export class BrandController {
       },
     },
   })
+  @authenticate('jwt')
   async fileUpload(
     @requestBody.file()
     request: Request,
     @inject(RestBindings.Http.RESPONSE) response: Response,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
   ): Promise<object> {
-    return new Promise<object>((resolve, reject) => {
-      this.handler(request, response, (err: unknown) => {
-        if (err) reject(err);
-        else {
-          resolve(getFilesAndFields(request, 'brands'));
-        }
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      return new Promise<object>((resolve, reject) => {
+        this.handler(request, response, (err: unknown) => {
+          if (err) reject(err);
+          else {
+            resolve(getFilesAndFields(request, 'brands'));
+          }
+        });
       });
-    });
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @del('/brands/{id}', {
@@ -209,7 +265,19 @@ export class BrandController {
       },
     },
   })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.brandRepository.deleteById(id);
+  @authenticate('jwt')
+  async deleteById(
+    @param.path.number('id') id: number,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+  ): Promise<void> {
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      await this.brandRepository.deleteById(id);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 }
