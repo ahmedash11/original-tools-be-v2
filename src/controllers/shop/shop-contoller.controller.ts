@@ -1,3 +1,5 @@
+import {authenticate} from '@loopback/authentication';
+import {inject} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -10,6 +12,7 @@ import {
   del,
   get,
   getModelSchemaRef,
+  HttpErrors,
   param,
   patch,
   post,
@@ -17,13 +20,16 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {Shops} from '../../models';
-import {ShopsRepository} from '../../repositories';
+import {ShopsRepository, UserRepository} from '../../repositories';
 
 export class ShopContoller {
   constructor(
     @repository(ShopsRepository)
     public shopsRepository: ShopsRepository,
+    @repository(UserRepository)
+    public userRepository: UserRepository,
   ) {}
 
   @post('/shops')
@@ -31,6 +37,7 @@ export class ShopContoller {
     description: 'Shops model instance',
     content: {'application/json': {schema: getModelSchemaRef(Shops)}},
   })
+  @authenticate('jwt')
   async create(
     @requestBody({
       content: {
@@ -43,8 +50,17 @@ export class ShopContoller {
       },
     })
     shops: Omit<Shops, 'id'>,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
   ): Promise<Shops> {
-    return this.shopsRepository.create(shops);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      return this.shopsRepository.create(shops);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @get('/shops/count')
@@ -77,6 +93,7 @@ export class ShopContoller {
     description: 'Shops PATCH success count',
     content: {'application/json': {schema: CountSchema}},
   })
+  @authenticate('jwt')
   async updateAll(
     @requestBody({
       content: {
@@ -85,10 +102,19 @@ export class ShopContoller {
         },
       },
     })
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     shops: Shops,
     @param.where(Shops) where?: Where<Shops>,
   ): Promise<Count> {
-    return this.shopsRepository.updateAll(shops, where);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      return this.shopsRepository.updateAll(shops, where);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @get('/shops/{slug}')
@@ -116,6 +142,7 @@ export class ShopContoller {
   @response(204, {
     description: 'Shops PATCH success',
   })
+  @authenticate('jwt')
   async updateById(
     @param.path.number('id') id: number,
     @requestBody({
@@ -125,27 +152,58 @@ export class ShopContoller {
         },
       },
     })
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     shops: Shops,
   ): Promise<void> {
-    await this.shopsRepository.updateById(id, shops);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      await this.shopsRepository.updateById(id, shops);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @put('/shops/{id}')
   @response(204, {
     description: 'Shops PUT success',
   })
+  @authenticate('jwt')
   async replaceById(
     @param.path.number('id') id: number,
     @requestBody() shops: Shops,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
   ): Promise<void> {
-    await this.shopsRepository.replaceById(id, shops);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      await this.shopsRepository.replaceById(id, shops);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @del('/shops/{id}')
   @response(204, {
     description: 'Shops DELETE success',
   })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.shopsRepository.deleteById(id);
+  @authenticate('jwt')
+  async deleteById(
+    @param.path.number('id') id: number,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+  ): Promise<void> {
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      await this.shopsRepository.deleteById(id);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 }

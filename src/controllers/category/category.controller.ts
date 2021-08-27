@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {
   Count,
@@ -11,6 +12,7 @@ import {
   del,
   get,
   getModelSchemaRef,
+  HttpErrors,
   param,
   patch,
   post,
@@ -20,9 +22,10 @@ import {
   Response,
   RestBindings,
 } from '@loopback/rest';
+import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {FILE_UPLOAD_SERVICE} from '../../keys';
 import {Category} from '../../models';
-import {CategoryRepository} from '../../repositories';
+import {CategoryRepository, UserRepository} from '../../repositories';
 import {generateSlug, getFilesAndFields} from '../../services';
 import {FileUploadHandler} from '../../types';
 
@@ -31,6 +34,9 @@ export class CategoryController {
     @inject(FILE_UPLOAD_SERVICE) private handler: FileUploadHandler,
     @repository(CategoryRepository)
     public categoryRepository: CategoryRepository,
+
+    @repository(UserRepository)
+    public userRepository: UserRepository,
   ) {}
 
   @post('/categories', {
@@ -41,6 +47,7 @@ export class CategoryController {
       },
     },
   })
+  @authenticate('jwt')
   async create(
     @requestBody({
       content: {
@@ -53,9 +60,18 @@ export class CategoryController {
       },
     })
     category: Omit<Category, 'id'>,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
   ): Promise<Category> {
-    category.slug = generateSlug(category.title);
-    return this.categoryRepository.create(category);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      category.slug = generateSlug(category.title);
+      return this.categoryRepository.create(category);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @get('/categories/count', {
@@ -99,6 +115,7 @@ export class CategoryController {
       },
     },
   })
+  @authenticate('jwt')
   async updateAll(
     @requestBody({
       content: {
@@ -108,9 +125,19 @@ export class CategoryController {
       },
     })
     category: Category,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     @param.where(Category) where?: Where<Category>,
   ): Promise<Count> {
-    return this.categoryRepository.updateAll(category, where);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+
+    if ((await currenrUser).role == 'owner') {
+      return this.categoryRepository.updateAll(category, where);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @get('/categories/{slug}', {
@@ -145,10 +172,22 @@ export class CategoryController {
       },
     },
   })
-  async deleteBySlug(@param.path.string('slug') slug: string): Promise<void> {
-    await this.categoryRepository.deleteAll({
-      slug: slug,
-    });
+  @authenticate('jwt')
+  async deleteBySlug(
+    @param.path.string('slug') slug: string,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+  ): Promise<void> {
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      await this.categoryRepository.deleteAll({
+        slug: slug,
+      });
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @patch('/categories/{id}', {
@@ -158,8 +197,11 @@ export class CategoryController {
       },
     },
   })
+  @authenticate('jwt')
   async updateById(
     @param.path.number('id') id: number,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     @requestBody({
       content: {
         'application/json': {
@@ -169,9 +211,16 @@ export class CategoryController {
     })
     category: Category,
   ): Promise<Category> {
-    category.slug = generateSlug(category.title);
-    await this.categoryRepository.updateById(id, category);
-    return this.categoryRepository.findById(id);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      category.slug = generateSlug(category.title);
+      await this.categoryRepository.updateById(id, category);
+      return this.categoryRepository.findById(id);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @put('/categories/{id}', {
@@ -181,11 +230,21 @@ export class CategoryController {
       },
     },
   })
+  @authenticate('jwt')
   async replaceById(
     @param.path.number('id') id: number,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     @requestBody() category: Category,
   ): Promise<void> {
-    await this.categoryRepository.replaceById(id, category);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      await this.categoryRepository.replaceById(id, category);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @post('/categories/upload', {
@@ -224,7 +283,19 @@ export class CategoryController {
       },
     },
   })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.categoryRepository.deleteById(id);
+  @authenticate('jwt')
+  async deleteById(
+    @param.path.number('id') id: number,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+  ): Promise<void> {
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      await this.categoryRepository.deleteById(id);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 }

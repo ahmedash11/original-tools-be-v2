@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {
   Count,
@@ -11,6 +12,7 @@ import {
   del,
   get,
   getModelSchemaRef,
+  HttpErrors,
   param,
   patch,
   post,
@@ -20,12 +22,14 @@ import {
   Response,
   RestBindings,
 } from '@loopback/rest';
+import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {FILE_UPLOAD_SERVICE} from '../../keys';
 import {Product} from '../../models';
 import {
   BrandRepository,
   CategoryRepository,
   ProductRepository,
+  UserRepository,
 } from '../../repositories';
 import {concatSlug, getFilesAndFields} from '../../services';
 import {FileUploadHandler} from '../../types';
@@ -39,6 +43,8 @@ export class ProductController {
     public categoryRepository: CategoryRepository,
     @repository(BrandRepository)
     public brandRepository: BrandRepository,
+    @repository(UserRepository)
+    public userRepository: UserRepository,
   ) {}
 
   @post('/products', {
@@ -49,6 +55,7 @@ export class ProductController {
       },
     },
   })
+  @authenticate('jwt')
   async create(
     @requestBody({
       content: {
@@ -61,10 +68,19 @@ export class ProductController {
       },
     })
     product: Omit<Product, 'id'>,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
   ): Promise<Product> {
-    const brand = await this.brandRepository.findById(product.brandId);
-    product.slug = concatSlug([product.title, brand.title]);
-    return this.productRepository.create(product);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      const brand = await this.brandRepository.findById(product.brandId);
+      product.slug = concatSlug([product.title, brand.title]);
+      return this.productRepository.create(product);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @get('/products/count', {
@@ -162,6 +178,7 @@ export class ProductController {
       },
     },
   })
+  @authenticate('jwt')
   async updateAll(
     @requestBody({
       content: {
@@ -170,10 +187,19 @@ export class ProductController {
         },
       },
     })
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     product: Product,
     @param.where(Product) where?: Where<Product>,
   ): Promise<Count> {
-    return this.productRepository.updateAll(product, where);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      return this.productRepository.updateAll(product, where);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @get('/products/{slug}', {
@@ -209,6 +235,7 @@ export class ProductController {
       },
     },
   })
+  @authenticate('jwt')
   async updateById(
     @param.path.number('id') id: number,
     @requestBody({
@@ -218,12 +245,21 @@ export class ProductController {
         },
       },
     })
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     product: Product,
   ): Promise<Product> {
-    const brand = await this.brandRepository.findById(product.brandId);
-    product.slug = concatSlug([product.title, brand.title]);
-    await this.productRepository.updateById(id, product);
-    return this.productRepository.findById(id);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      const brand = await this.brandRepository.findById(product.brandId);
+      product.slug = concatSlug([product.title, brand.title]);
+      await this.productRepository.updateById(id, product);
+      return this.productRepository.findById(id);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @put('/products/{id}', {
@@ -233,11 +269,21 @@ export class ProductController {
       },
     },
   })
+  @authenticate('jwt')
   async replaceById(
     @param.path.number('id') id: number,
     @requestBody() product: Product,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
   ): Promise<void> {
-    await this.productRepository.replaceById(id, product);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      await this.productRepository.replaceById(id, product);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @post('/products/upload', {
@@ -276,7 +322,19 @@ export class ProductController {
       },
     },
   })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.productRepository.deleteById(id);
+  @authenticate('jwt')
+  async deleteById(
+    @param.path.number('id') id: number,
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+  ): Promise<void> {
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      await this.productRepository.deleteById(id);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 }
