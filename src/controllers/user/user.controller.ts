@@ -198,24 +198,6 @@ export class UserController {
     }
   }
 
-  @get('/usersList', {
-    responses: {
-      '200': {
-        description: 'User',
-        content: {
-          'application/json': {
-            schema: {
-              'x-ts-type': User,
-            },
-          },
-        },
-      },
-    },
-  })
-  async find(@param.filter(User) filter?: Filter<User>): Promise<User[]> {
-    return this.userRepository.find(filter);
-  }
-
   @get('/users/{id}', {
     responses: {
       '200': {
@@ -237,6 +219,24 @@ export class UserController {
   // })
   async findById(@param.path.string('id') id: number): Promise<User> {
     return this.userRepository.findById(id);
+  }
+
+  @get('/users', {
+    responses: {
+      '200': {
+        description: 'User',
+        content: {
+          'application/json': {
+            schema: {
+              'x-ts-type': User,
+            },
+          },
+        },
+      },
+    },
+  })
+  async find(@param.filter(User) filter?: Filter<User>): Promise<User[]> {
+    return this.userRepository.find(filter);
   }
 
   @patch('/users/{id}', {
