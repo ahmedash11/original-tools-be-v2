@@ -4,7 +4,7 @@ import {
   UserService,
 } from '@loopback/authentication';
 import {inject} from '@loopback/core';
-import {model, property, repository} from '@loopback/repository';
+import {Filter, model, property, repository} from '@loopback/repository';
 import {
   del,
   get,
@@ -196,6 +196,24 @@ export class UserController {
         throw error;
       }
     }
+  }
+
+  @get('/usersList', {
+    responses: {
+      '200': {
+        description: 'User',
+        content: {
+          'application/json': {
+            schema: {
+              'x-ts-type': User,
+            },
+          },
+        },
+      },
+    },
+  })
+  async find(@param.filter(User) filter?: Filter<User>): Promise<User[]> {
+    return this.userRepository.find(filter);
   }
 
   @get('/users/{id}', {
