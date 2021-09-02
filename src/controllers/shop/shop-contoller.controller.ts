@@ -23,6 +23,7 @@ import {
 import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {Shops} from '../../models';
 import {ShopsRepository, UserRepository} from '../../repositories';
+import {concatSlug} from '../../services';
 
 export class ShopContoller {
   constructor(
@@ -57,6 +58,7 @@ export class ShopContoller {
     const userId = currentUserProfile[securityId];
     const currenrUser = this.userRepository.findById(userId);
     if ((await currenrUser).role == 'owner') {
+      shops.slug = concatSlug([shops.name]);
       return this.shopsRepository.create(shops);
     } else {
       throw new HttpErrors.Forbidden('acces denied');
