@@ -217,7 +217,7 @@ export class UserController {
   // deniedRoles: ['user'],
   // voters: [basicAuthorization],
   // })
-  async findById(@param.path.string('id') id: number): Promise<User> {
+  async findById(@param.path.string('id') id: string): Promise<User> {
     return this.userRepository.findById(id);
   }
 
@@ -253,7 +253,7 @@ export class UserController {
   })
   @authenticate('jwt')
   async UpdateById(
-    @param.path.number('id') id: number,
+    @param.path.number('id') id: string,
     @requestBody() user: User,
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
@@ -285,7 +285,7 @@ export class UserController {
   //   voters: [basicAuthorization],
   // })
   async replaceById(
-    @param.path.number('id') id: number,
+    @param.path.number('id') id: string,
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
     @requestBody() user: User,
@@ -374,7 +374,7 @@ export class UserController {
   //   voters: [basicAuthorization],
   // })
   async deleteById(
-    @param.path.number('id') id: number,
+    @param.path.number('id') id: string,
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
   ): Promise<void> {

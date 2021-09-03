@@ -5,11 +5,11 @@ import {UserCredentials} from './user-credentials.model';
 @model()
 export class User extends Entity {
   @property({
-    type: 'number',
+    type: 'string',
     generated: true,
     id: true,
   })
-  id: number;
+  id: string;
 
   @property({
     type: 'string',
