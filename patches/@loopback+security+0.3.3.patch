@@ -1,5 +1,5 @@
 diff --git a/node_modules/@loopback/security/dist/types.d.ts b/node_modules/@loopback/security/dist/types.d.ts
-index e4c0d04..1515f74 100644
+index e4c0d04..ece3607 100644
 --- a/node_modules/@loopback/security/dist/types.d.ts
 +++ b/node_modules/@loopback/security/dist/types.d.ts
 @@ -1,7 +1,7 @@
@@ -31,7 +31,7 @@ index e4c0d04..1515f74 100644
   * The minimum set of attributes that describe a user.
   */
  export interface UserProfile extends Principal {
-+    id: number
++    id: number;
      email?: string;
      name?: string;
 +    role?: string;
