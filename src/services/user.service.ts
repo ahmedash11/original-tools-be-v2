@@ -48,7 +48,7 @@ export class MyUserService implements UserService<User, Credentials> {
     // since first name and lastName are optional, no error is thrown if not provided
     return {
       [securityId]: user.id,
-      id: user.id,
+      // id: user.id,
       role: user.role,
     };
   }
