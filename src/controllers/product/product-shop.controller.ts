@@ -42,7 +42,7 @@ export class AnyController {
     @param.query.object('filter') filter?: Filter<Product>,
   ): Promise<Product[]> {
     // current user to ensure just the owner have acsess here
-    const userId: number | undefined = currentUserProfile[securityId];
+    const userId = currentUserProfile[securityId];
     const shop = await this.shopsRepository.findOne({
       where: {
         id: id,
