@@ -18,6 +18,7 @@ export async function basicAuthorization(
     const user = _.pick(authorizationCtx.principals[0], ['id', 'name', 'role']);
     currentUser = {
       [securityId]: user.id,
+      id: user.id,
       name: user.name,
       role: user.role,
     };
