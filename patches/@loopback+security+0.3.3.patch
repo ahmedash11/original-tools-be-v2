@@ -1,5 +1,5 @@
 diff --git a/node_modules/@loopback/security/dist/types.d.ts b/node_modules/@loopback/security/dist/types.d.ts
-index e4c0d04..34a8b27 100644
+index e4c0d04..5633d7b 100644
 --- a/node_modules/@loopback/security/dist/types.d.ts
 +++ b/node_modules/@loopback/security/dist/types.d.ts
 @@ -1,7 +1,7 @@
@@ -11,7 +11,7 @@ index e4c0d04..34a8b27 100644
  /**
   * Represent a user, an application, or a device
   */
-@@ -9,14 +9,14 @@ export interface Principal {
+@@ -9,21 +9,23 @@ export interface Principal {
      /**
       * Name/id
       */
@@ -29,8 +29,9 @@ index e4c0d04..34a8b27 100644
  }
  /**
   * The minimum set of attributes that describe a user.
-@@ -24,6 +24,7 @@ export declare class TypedPrincipal implements Principal {
+  */
  export interface UserProfile extends Principal {
++    id?: number
      email?: string;
      name?: string;
 +    role?: string;
