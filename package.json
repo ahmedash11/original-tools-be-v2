@@ -12,6 +12,7 @@
     "node": ">=10.16"
   },
   "scripts": {
+    "postinstall": "patch-package",
     "build": "lb-tsc",
     "build:watch": "lb-tsc --watch",
     "lint": "yarn run prettier:check && yarn run eslint",
@@ -78,6 +79,7 @@
     "@types/sha256": "^0.2.0",
     "eslint": "^7.10.0",
     "nodemon": "^2.0.7",
+    "patch-package": "^6.4.7",
     "source-map-support": "^0.5.19",
     "typescript": "~4.1.2"
   }
