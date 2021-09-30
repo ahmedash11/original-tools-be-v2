@@ -20,7 +20,6 @@ export async function basicAuthorization(
       [securityId]: user.id,
       name: user.name,
       role: user.role,
-      id: user.id,
     };
   } else {
     return AuthorizationDecision.DENY;
