@@ -1,9 +1,10 @@
 import {Getter, inject} from '@loopback/core';
-import {DefaultCrudRepository, repository, HasManyThroughRepositoryFactory} from '@loopback/repository';
+import {DefaultCrudRepository, repository, HasManyThroughRepositoryFactory, BelongsToAccessor} from '@loopback/repository';
 import {DbDataSource} from '../datasources';
-import {Shops, ShopsRelations, Product, ProductShop} from '../models';
+import {Shops, ShopsRelations, Product, ProductShop, User} from '../models';
 import {ProductRepository} from './product.repository';
 import {ProductShopRepository} from './product-shop.repository';
+import {UserRepository} from './user.repository';
 
 export class ShopsRepository extends DefaultCrudRepository<
   Shops,
@@ -16,12 +17,16 @@ export class ShopsRepository extends DefaultCrudRepository<
           typeof Shops.prototype.id
         >;
 
+  public readonly user: BelongsToAccessor<User, typeof Shops.prototype.id>;
+
   constructor(
     @inject('datasources.db') dataSource: DbDataSource,
     @repository.getter('ProductRepository')
-    protected productRepositoryGetter: Getter<ProductRepository>, @repository.getter('ProductShopRepository') protected productShopRepositoryGetter: Getter<ProductShopRepository>,
+    protected productRepositoryGetter: Getter<ProductRepository>, @repository.getter('ProductShopRepository') protected productShopRepositoryGetter: Getter<ProductShopRepository>, @repository.getter('UserRepository') protected userRepositoryGetter: Getter<UserRepository>,
   ) {
     super(Shops, dataSource);
+    this.user = this.createBelongsToAccessorFor('user', userRepositoryGetter,);
+    this.registerInclusionResolver('user', this.user.inclusionResolver);
     this.products = this.createHasManyThroughRepositoryFactoryFor('products', productRepositoryGetter, productShopRepositoryGetter,);
     this.registerInclusionResolver('products', this.products.inclusionResolver);
   }
