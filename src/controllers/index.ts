@@ -38,3 +38,5 @@ export * from './tag/tag.controller';
 export * from './toolbar/toolbar.controller';
 export * from './type/type.controller';
 export * from './user/user.controller';
+export * from './shops-user.controller';
+export * from './user-shops.controller';
