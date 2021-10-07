@@ -2,12 +2,14 @@
 
 import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
-import {Filter, repository} from '@loopback/repository';
+import {Count, Filter, repository} from '@loopback/repository';
 import {
+  del,
   get,
   getModelSchemaRef,
   HttpErrors,
   param,
+  patch,
   post,
   requestBody,
 } from '@loopback/rest';
@@ -165,6 +167,67 @@ export class AnyController {
       .create(product);
     if (userId) {
       return postShopProducts;
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
+  }
+
+  @patch('/shopproducts/{id}', {
+    responses: {
+      '200': {
+        description: 'edit a shopproducts model instance',
+      },
+    },
+  })
+  @authenticate('jwt')
+  async editShopProducts(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+    @param.path.number('id') id: number,
+    @param.query.object('filter') filterShop: Filter<Shops>,
+  ): Promise<Count> {
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const ShopId = (
+      await this.userRepository.shops(userId).find(filterShop)
+    ).shift()?.id;
+    let shopId = ShopId!;
+    let editShopProducts = this.shopsRepository
+      .products(shopId)
+      .patch({id: id});
+    if (userId) {
+      return editShopProducts;
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
+  }
+
+  @del('/shopproducts/{id}', {
+    responses: {
+      '204': {
+        description: 'delete a shopproducts model instance',
+        // content: {'application/json': {schema: getModelSchemaRef(Product)}},
+      },
+    },
+  })
+  @authenticate('jwt')
+  async delShopProducts(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+    @param.path.number('id') id: number,
+    @param.query.object('filter') filterShop: Filter<Shops>,
+  ): Promise<Count> {
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const ShopId = (
+      await this.userRepository.shops(userId).find(filterShop)
+    ).shift()?.id;
+    let shopId = ShopId!;
+    let delShopProducts = this.shopsRepository
+      .products(shopId)
+      .delete({id: id});
+    if (userId) {
+      return delShopProducts;
     } else {
       throw new HttpErrors.Forbidden('acces denied');
     }
