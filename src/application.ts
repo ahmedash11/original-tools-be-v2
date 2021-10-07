@@ -124,10 +124,8 @@ export class TestApp extends BootMixin(
     this.bind(TokenServiceBindings.TOKEN_SECRET).to(
       TokenServiceConstants.TOKEN_SECRET_VALUE,
     );
-
-    this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to(
-      TokenServiceConstants.TOKEN_EXPIRES_IN_VALUE,
-    );
+    // for jwt access token expiration
+    this.bind(TokenServiceBindings.TOKEN_EXPIRES_IN).to('31556952');
 
     this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
 
