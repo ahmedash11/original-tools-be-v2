@@ -92,6 +92,32 @@ export class AnyController {
     }
   }
 
+  @get('/shopproducts/count', {
+    responses: {
+      '200': {
+        description: 'ShopProduct model count',
+        content: {'application/json': {schema: CountSchema}},
+      },
+    },
+  })
+  @authenticate('jwt')
+  async count(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+    @param.query.object('filter') filterShop?: Filter<Shops>,
+  ): Promise<any> {
+    // current user to ensure just the owner have acsess here
+    const userId = await currentUserProfile[securityId];
+    const ShopId = await (
+      await this.userRepository.shops(userId).find(filterShop)
+    ).shift()?.id;
+    let shopId = ShopId!;
+    let productsCount = await this.shopsRepository
+      .products(shopId)
+      .find({offset: 5, limit: 10});
+    return productsCount;
+  }
+
   @post('/shop/{id}/products', {
     responses: {
       '200': {
