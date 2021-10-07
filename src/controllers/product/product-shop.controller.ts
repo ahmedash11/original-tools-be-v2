@@ -2,18 +2,11 @@
 
 import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
-import {
-  Count,
-  CountSchema,
-  Filter,
-  repository,
-  Where,
-} from '@loopback/repository';
+import {Count, CountSchema, Filter, repository} from '@loopback/repository';
 import {
   del,
   get,
   getModelSchemaRef,
-  getWhereSchemaFor,
   HttpErrors,
   param,
   patch,
@@ -199,9 +192,9 @@ export class AnyController {
     product: Partial<Product>,
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
-    @param.query.object('where', getWhereSchemaFor(Product))
-    where?: Where<Product>,
-    // @param.path.number('id') id: number,
+    // @param.query.object('where', getWhereSchemaFor(Product))
+    // where?: Where<Product>,
+    @param.path.number('id') id: number,
     @param.query.object('filter') filterShop?: Filter<Shops>,
   ): Promise<Count> {
     // current user to ensure just the owner have acsess here
@@ -212,7 +205,7 @@ export class AnyController {
     let shopId = ShopId!;
     let editShopProducts = this.shopsRepository
       .products(shopId)
-      .patch(product, where);
+      .patch(product, {id: id});
     if (userId) {
       return editShopProducts;
     } else {
