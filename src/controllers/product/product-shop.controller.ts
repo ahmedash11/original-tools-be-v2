@@ -2,11 +2,18 @@
 
 import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
-import {Count, Filter, repository} from '@loopback/repository';
+import {
+  Count,
+  CountSchema,
+  Filter,
+  repository,
+  Where,
+} from '@loopback/repository';
 import {
   del,
   get,
   getModelSchemaRef,
+  getWhereSchemaFor,
   HttpErrors,
   param,
   patch,
@@ -176,15 +183,26 @@ export class AnyController {
     responses: {
       '200': {
         description: 'edit a shopproducts model instance',
+        content: {'application/json': {schema: CountSchema}},
       },
     },
   })
   @authenticate('jwt')
   async editShopProducts(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: getModelSchemaRef(Product, {partial: true}),
+        },
+      },
+    })
+    product: Partial<Product>,
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
-    @param.path.number('id') id: number,
-    @param.query.object('filter') filterShop: Filter<Shops>,
+    @param.query.object('where', getWhereSchemaFor(Product))
+    where?: Where<Product>,
+    // @param.path.number('id') id: number,
+    @param.query.object('filter') filterShop?: Filter<Shops>,
   ): Promise<Count> {
     // current user to ensure just the owner have acsess here
     const userId = currentUserProfile[securityId];
@@ -194,7 +212,7 @@ export class AnyController {
     let shopId = ShopId!;
     let editShopProducts = this.shopsRepository
       .products(shopId)
-      .patch({id: id});
+      .patch(product, where);
     if (userId) {
       return editShopProducts;
     } else {
