@@ -73,7 +73,9 @@ export class ShopProductContollerController {
   async find(
     @param.filter(ProductShop) filter?: Filter<ProductShop>,
   ): Promise<ProductShop[]> {
-    return this.productShopRepository.find(filter);
+    return this.productShopRepository.find({
+      include: [{relation: 'product'}, {relation: 'shop'}],
+    });
   }
 
   @patch('/product-shops')

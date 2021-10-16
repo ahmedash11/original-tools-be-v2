@@ -11,6 +11,8 @@ import {ProductTag} from './product-tag.model';
 import {ProductType} from './product-type.model';
 import {Tag} from './tag.model';
 import {Type} from './type.model';
+import {Shops} from './shops.model';
+import {ProductShop} from './product-shop.model';
 
 @model({
   settings: {
@@ -161,6 +163,9 @@ export class Product extends Entity {
 
   @hasMany(() => Type, {through: {model: () => ProductType}})
   types: Type[];
+
+  @hasMany(() => Shops, {through: {model: () => ProductShop, keyTo: 'shopId'}})
+  shops: Shops[];
 
   constructor(data?: Partial<Product>) {
     super(data);

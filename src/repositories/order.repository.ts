@@ -11,11 +11,11 @@ import {
   Order,
   OrderProduct,
   OrderRelations,
-  Product,
-} from '../models';
+  Product, Shops} from '../models';
 import {CustomerRepository} from './customer.repository';
 import {OrderProductRepository} from './order-product.repository';
 import {ProductRepository} from './product.repository';
+import {ShopsRepository} from './shops.repository';
 
 export class OrderRepository extends DefaultCrudRepository<
   Order,
@@ -33,6 +33,11 @@ export class OrderRepository extends DefaultCrudRepository<
     typeof Order.prototype.id
   >;
 
+  public readonly shops: HasManyThroughRepositoryFactory<Shops, typeof Shops.prototype.id,
+          OrderProduct,
+          typeof Order.prototype.id
+        >;
+
   constructor(
     @inject('datasources.db') dataSource: DbDataSource,
     @repository.getter('OrderProductRepository')
@@ -40,9 +45,11 @@ export class OrderRepository extends DefaultCrudRepository<
     @repository.getter('ProductRepository')
     protected productRepositoryGetter: Getter<ProductRepository>,
     @repository.getter('CustomerRepository')
-    protected customerRepositoryGetter: Getter<CustomerRepository>,
+    protected customerRepositoryGetter: Getter<CustomerRepository>, @repository.getter('ShopsRepository') protected shopsRepositoryGetter: Getter<ShopsRepository>,
   ) {
     super(Order, dataSource);
+    this.shops = this.createHasManyThroughRepositoryFactoryFor('shops', shopsRepositoryGetter, orderProductRepositoryGetter,);
+    this.registerInclusionResolver('shops', this.shops.inclusionResolver);
     this.products = this.createHasManyThroughRepositoryFactoryFor(
       'products',
       productRepositoryGetter,

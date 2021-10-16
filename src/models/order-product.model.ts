@@ -40,6 +40,11 @@ export class OrderProduct extends Entity {
 
   @property({
     type: 'number',
+  })
+  shopId?: number;
+
+  @property({
+    type: 'number',
     default: 1,
   })
   quantity: number;

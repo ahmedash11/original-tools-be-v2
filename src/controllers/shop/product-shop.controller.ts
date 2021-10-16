@@ -2,11 +2,18 @@
 
 import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
-import {Count, CountSchema, Filter, repository} from '@loopback/repository';
+import {
+  Count,
+  CountSchema,
+  Filter,
+  repository,
+  Where,
+} from '@loopback/repository';
 import {
   del,
   get,
   getModelSchemaRef,
+  getWhereSchemaFor,
   HttpErrors,
   param,
   patch,
@@ -14,10 +21,10 @@ import {
   requestBody,
 } from '@loopback/rest';
 import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
-import {Product, Shops} from '../../models';
+import {Product, ProductShop, Shops} from '../../models';
 import {ShopsRepository, UserRepository} from '../../repositories';
 
-export class AnyController {
+export class ProductShopContoller {
   constructor(
     @repository(ShopsRepository) protected shopsRepository: ShopsRepository,
     @repository(UserRepository)
@@ -27,36 +34,22 @@ export class AnyController {
   @get('/shop/{id}/products', {
     responses: {
       '200': {
-        description: 'Array of Shops has many Product through ProductShop',
+        description: 'Array of Shops has many ProductShop',
         content: {
           'application/json': {
-            schema: {type: 'array', items: getModelSchemaRef(Product)},
+            schema: {type: 'array', items: getModelSchemaRef(ProductShop)},
           },
         },
       },
     },
   })
-  @authenticate('jwt')
   async find(
-    @inject(SecurityBindings.USER)
-    currentUserProfile: UserProfile,
     @param.path.number('id') id: number,
-    @param.query.object('filter') filter?: Filter<Product>,
-  ): Promise<Product[]> {
-    // current user to ensure just the owner have acsess here
-    const userId = currentUserProfile[securityId];
-    const shop = await this.shopsRepository.findOne({
-      where: {
-        id: id,
-      },
-    });
-    if (shop?.userId == userId) {
-      return shop
-        ? await this.shopsRepository.products(shop.id).find(filter)
-        : [];
-    } else {
-      throw new HttpErrors.Forbidden('acces denied');
-    }
+    @param.query.object('filter') filter?: Filter<ProductShop>,
+  ): Promise<ProductShop[]> {
+    return this.shopsRepository
+      .productShops(id)
+      .find({include: [{relation: 'product'}]});
   }
 
   @get('/shopproducts', {
@@ -117,12 +110,11 @@ export class AnyController {
       .find({offset: 5, limit: 10});
     return productsCount;
   }
-
   @post('/shop/{id}/products', {
     responses: {
       '200': {
-        description: 'create a Product model instance',
-        content: {'application/json': {schema: getModelSchemaRef(Product)}},
+        description: 'Shops model instance',
+        content: {'application/json': {schema: getModelSchemaRef(ProductShop)}},
       },
     },
   })
@@ -134,65 +126,55 @@ export class AnyController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Product, {
-            title: 'NewProductInShops',
+          schema: getModelSchemaRef(ProductShop, {
+            title: 'NewProductShopInShops',
             exclude: ['id'],
+            optional: ['shopId'],
           }),
         },
       },
     })
-    product: Omit<Product, 'id'>,
-  ): Promise<Product> {
+    productShop: Omit<ProductShop, 'id'>,
+  ): Promise<ProductShop> {
     // current user to ensure just the owner have acsess here
-    const userId = currentUserProfile[securityId];
-    const shop = await this.shopsRepository.findOne({
-      where: {
-        id: id,
-      },
-    });
-    if (shop?.userId == userId) {
-      return this.shopsRepository.products(id).create(product);
+    const userId = await currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      return this.shopsRepository.productShops(id).create(productShop);
     } else {
       throw new HttpErrors.Forbidden('acces denied');
     }
   }
 
-  @post('/shopproducts', {
+  @patch('/shop/{id}/products', {
     responses: {
       '200': {
-        description: 'create a Product model instance',
-        content: {'application/json': {schema: getModelSchemaRef(Product)}},
+        description: 'Shops.ProductShop PATCH success count',
+        content: {'application/json': {schema: CountSchema}},
       },
     },
   })
   @authenticate('jwt')
-  async createShopProducts(
+  async patch(
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
-    @param.query.object('filter') filterShop: Filter<Shops>,
+    @param.path.number('id') id: number,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Product, {
-            title: 'NewProductInShops',
-            exclude: ['id'],
-          }),
+          schema: getModelSchemaRef(ProductShop, {partial: true}),
         },
       },
     })
-    product: Omit<Product, 'id'>,
-  ): Promise<Product> {
+    productShop: Partial<ProductShop>,
+    @param.query.object('where', getWhereSchemaFor(ProductShop))
+    where?: Where<ProductShop>,
+  ): Promise<Count> {
     // current user to ensure just the owner have acsess here
-    const userId = currentUserProfile[securityId];
-    const ShopId = (
-      await this.userRepository.shops(userId).find(filterShop)
-    ).shift()?.id;
-    let shopId = ShopId!;
-    let postShopProducts = this.shopsRepository
-      .products(shopId)
-      .create(product);
-    if (userId) {
-      return postShopProducts;
+    const userId = await currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      return this.shopsRepository.productShops(id).patch(productShop, where);
     } else {
       throw new HttpErrors.Forbidden('acces denied');
     }
@@ -234,6 +216,32 @@ export class AnyController {
       .patch(product, {id: id});
     if (userId) {
       return editShopProducts;
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
+  }
+
+  @del('/shop/{id}/products', {
+    responses: {
+      '200': {
+        description: 'Shops.ProductShop DELETE success count',
+        content: {'application/json': {schema: CountSchema}},
+      },
+    },
+  })
+  @authenticate('jwt')
+  async delete(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+    @param.path.number('id') id: number,
+    @param.query.object('where', getWhereSchemaFor(ProductShop))
+    where?: Where<ProductShop>,
+  ): Promise<Count> {
+    // current user to ensure just the owner have acsess here
+    const userId = await currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await currenrUser).role == 'owner') {
+      return this.shopsRepository.productShops(id).delete(where);
     } else {
       throw new HttpErrors.Forbidden('acces denied');
     }
