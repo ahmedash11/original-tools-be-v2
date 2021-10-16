@@ -57,6 +57,9 @@ export class Shops extends Entity {
   @belongsTo(() => User)
   userId: number;
 
+  @hasMany(() => ProductShop, {keyTo: 'shopId'})
+  productShops: ProductShop[];
+
   constructor(data?: Partial<Shops>) {
     super(data);
   }

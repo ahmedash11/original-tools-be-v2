@@ -14,14 +14,15 @@ import {
   ProductTag,
   ProductType,
   Tag,
-  Type,
-} from '../models';
+  Type, Shops, ProductShop} from '../models';
 import {BrandRepository} from './brand.repository';
 import {CategoryRepository} from './category.repository';
 import {ProductTagRepository} from './product-tag.repository';
 import {ProductTypeRepository} from './product-type.repository';
 import {TagRepository} from './tag.repository';
 import {TypeRepository} from './type.repository';
+import {ProductShopRepository} from './product-shop.repository';
+import {ShopsRepository} from './shops.repository';
 
 export class ProductRepository extends DefaultCrudRepository<
   Product,
@@ -49,6 +50,11 @@ export class ProductRepository extends DefaultCrudRepository<
     typeof Product.prototype.id
   >;
 
+  public readonly shops: HasManyThroughRepositoryFactory<Shops, typeof Shops.prototype.id,
+          ProductShop,
+          typeof Product.prototype.id
+        >;
+
   constructor(
     @inject('datasources.db') dataSource: DbDataSource,
 
@@ -68,9 +74,11 @@ export class ProductRepository extends DefaultCrudRepository<
     protected productTypeRepositoryGetter: Getter<ProductTypeRepository>,
 
     @repository.getter('TypeRepository')
-    protected typeRepositoryGetter: Getter<TypeRepository>,
+    protected typeRepositoryGetter: Getter<TypeRepository>, @repository.getter('ProductShopRepository') protected productShopRepositoryGetter: Getter<ProductShopRepository>, @repository.getter('ShopsRepository') protected shopsRepositoryGetter: Getter<ShopsRepository>,
   ) {
     super(Product, dataSource);
+    this.shops = this.createHasManyThroughRepositoryFactoryFor('shops', shopsRepositoryGetter, productShopRepositoryGetter,);
+    this.registerInclusionResolver('shops', this.shops.inclusionResolver);
 
     this.types = this.createHasManyThroughRepositoryFactoryFor(
       'types',

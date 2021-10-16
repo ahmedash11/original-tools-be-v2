@@ -8,6 +8,7 @@ import {
 import {Customer} from './customer.model';
 import {OrderProduct} from './order-product.model';
 import {Product} from './product.model';
+import {Shops} from './shops.model';
 
 @model({
   settings: {
@@ -65,6 +66,9 @@ export class Order extends Entity {
 
   @hasMany(() => Product, {through: {model: () => OrderProduct}})
   products: Product[];
+
+  @hasMany(() => Shops, {through: {model: () => OrderProduct, keyTo: 'shopId'}})
+  shops: Shops[];
 
   constructor(data?: Partial<Order>) {
     super(data);
