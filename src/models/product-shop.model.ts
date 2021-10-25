@@ -1,4 +1,4 @@
-import {Entity, model, property, belongsTo} from '@loopback/repository';
+import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {Product} from './product.model';
 import {Shops} from './shops.model';
 
@@ -31,6 +31,7 @@ export class ProductShop extends Entity {
   id?: number;
   @property({
     type: 'number',
+    default: 0,
   })
   discount?: number;
 

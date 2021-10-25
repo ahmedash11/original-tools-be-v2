@@ -6,7 +6,7 @@ import {
   Filter,
   FilterExcludingWhere,
   repository,
-  Where
+  Where,
 } from '@loopback/repository';
 import {
   del,
@@ -16,7 +16,7 @@ import {
   patch,
   post,
   put,
-  requestBody
+  requestBody,
 } from '@loopback/rest';
 import axios from 'axios';
 import SHA256 from 'sha256';
@@ -26,7 +26,7 @@ import {
   AddressRepository,
   CustomerRepository,
   OrderProductRepository,
-  OrderRepository
+  OrderRepository,
 } from '../../repositories';
 
 const MerchantCode = process.env.MERCHANTCODE;
@@ -64,6 +64,7 @@ export class OrderController {
             address: Address,
             customer: Customer,
             products: Object,
+            shopId: Array,
             total: Number,
             creditCard: Object,
             paymentMethod: String,
@@ -119,9 +120,11 @@ export class OrderController {
         orderDate: new Date(),
       };
       let newOrder = await this.orderRepository.create(orderData);
-      await this.orderProductRepository.createAll(
-        products.map(product => ({...product, orderId: newOrder.id})),
-      );
+      let product = products.map(product => ({
+        ...product,
+        orderId: newOrder.id,
+      }));
+      await this.orderProductRepository.createAll(product);
 
       if (paymentMethod === 'creditcard') {
         creditCardData = {

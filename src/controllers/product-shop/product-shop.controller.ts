@@ -1,3 +1,4 @@
+import {inject} from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -10,6 +11,7 @@ import {
   del,
   get,
   getModelSchemaRef,
+  HttpErrors,
   param,
   patch,
   post,
@@ -17,13 +19,16 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
+import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {ProductShop} from '../../models';
-import {ProductShopRepository} from '../../repositories';
+import {ProductShopRepository, UserRepository} from '../../repositories';
 
-export class ShopProductContollerController {
+export class ProductShopContoller {
   constructor(
     @repository(ProductShopRepository)
     public productShopRepository: ProductShopRepository,
+    @repository(UserRepository)
+    public userRepository: UserRepository,
   ) {}
 
   @post('/product-shops')
@@ -42,9 +47,18 @@ export class ShopProductContollerController {
         },
       },
     })
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
     productShop: Omit<ProductShop, 'id'>,
   ): Promise<ProductShop> {
-    return this.productShopRepository.create(productShop);
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = this.userRepository.findById(userId);
+    if ((await (await currenrUser).role) == 'owner') {
+      return this.productShopRepository.create(productShop);
+    } else {
+      throw new HttpErrors.Forbidden('acces denied');
+    }
   }
 
   @get('/product-shops/count')
