@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {
   Count,
@@ -36,6 +37,7 @@ export class ProductShopContoller {
     description: 'ProductShop model instance',
     content: {'application/json': {schema: getModelSchemaRef(ProductShop)}},
   })
+  @authenticate('jwt')
   async create(
     @requestBody({
       content: {
