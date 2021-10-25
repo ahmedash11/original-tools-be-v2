@@ -24,7 +24,7 @@ import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import {Product, ProductShop, Shops} from '../../models';
 import {ShopsRepository, UserRepository} from '../../repositories';
 
-export class ProductShopContoller {
+export class ShopProductContoller {
   constructor(
     @repository(ShopsRepository) protected shopsRepository: ShopsRepository,
     @repository(UserRepository)
@@ -43,13 +43,12 @@ export class ProductShopContoller {
       },
     },
   })
-  async find(
-    @param.path.number('id') id: number,
-    @param.query.object('filter') filter?: Filter<ProductShop>,
-  ): Promise<ProductShop[]> {
-    return this.shopsRepository
+  async find(@param.path.number('id') id: number) {
+    const shop = await this.shopsRepository.findById(id);
+    const productshop = await this.shopsRepository
       .productShops(id)
       .find({include: [{relation: 'product'}]});
+    return [shop, productshop];
   }
 
   @get('/shopproducts', {

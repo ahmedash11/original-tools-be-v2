@@ -1,22 +1,13 @@
-import {
-  repository,
-} from '@loopback/repository';
-import {
-  param,
-  get,
-  getModelSchemaRef,
-} from '@loopback/rest';
-import {
-  Shops,
-  User,
-} from '../models';
-import {ShopsRepository} from '../repositories';
+import {repository} from '@loopback/repository';
+import {get, getModelSchemaRef, param} from '@loopback/rest';
+import {Shops, User} from '../../models';
+import {ShopsRepository} from '../../repositories';
 
 export class ShopsUserController {
   constructor(
     @repository(ShopsRepository)
     public shopsRepository: ShopsRepository,
-  ) { }
+  ) {}
 
   @get('/shops/{id}/user', {
     responses: {

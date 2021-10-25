@@ -1,4 +1,10 @@
-import {Entity, hasMany, model, property, belongsTo} from '@loopback/repository';
+import {
+  belongsTo,
+  Entity,
+  hasMany,
+  model,
+  property,
+} from '@loopback/repository';
 import {ProductShop} from './product-shop.model';
 import {Product} from './product.model';
 import {User} from './user.model';

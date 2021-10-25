@@ -1,21 +1,6 @@
-import {
-  Count,
-  CountSchema,
-  Filter,
-  repository,
-  Where,
-} from '@loopback/repository';
-import {
-  del,
-  get,
-  getModelSchemaRef,
-  getWhereSchemaFor,
-  param,
-  patch,
-  post,
-  requestBody,
-} from '@loopback/rest';
-import {Order, Product} from '../../models';
+import {Filter, repository} from '@loopback/repository';
+import {get, getModelSchemaRef, param} from '@loopback/rest';
+import {Product} from '../../models';
 import {OrderProductRepository, OrderRepository} from '../../repositories';
 
 export class OrderProductController {
@@ -56,70 +41,5 @@ export class OrderProductController {
       };
     });
     return data;
-  }
-
-  @post('/orders/{id}/products', {
-    responses: {
-      '200': {
-        description: 'create a Product model instance',
-        content: {'application/json': {schema: getModelSchemaRef(Product)}},
-      },
-    },
-  })
-  async create(
-    @param.path.number('id') id: typeof Order.prototype.id,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Product, {
-            title: 'NewProductInOrder',
-            exclude: ['id'],
-          }),
-        },
-      },
-    })
-    product: Omit<Product, 'id'>,
-  ): Promise<Product> {
-    return this.orderRepository.products(id).create(product);
-  }
-
-  @patch('/orders/{id}/products', {
-    responses: {
-      '200': {
-        description: 'Order.Product PATCH success count',
-        content: {'application/json': {schema: CountSchema}},
-      },
-    },
-  })
-  async patch(
-    @param.path.number('id') id: number,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Product, {partial: true}),
-        },
-      },
-    })
-    product: Partial<Product>,
-    @param.query.object('where', getWhereSchemaFor(Product))
-    where?: Where<Product>,
-  ): Promise<Count> {
-    return this.orderRepository.products(id).patch(product, where);
-  }
-
-  @del('/orders/{id}/products', {
-    responses: {
-      '200': {
-        description: 'Order.Product DELETE success count',
-        content: {'application/json': {schema: CountSchema}},
-      },
-    },
-  })
-  async delete(
-    @param.path.number('id') id: number,
-    @param.query.object('where', getWhereSchemaFor(Product))
-    where?: Where<Product>,
-  ): Promise<Count> {
-    return this.orderRepository.products(id).delete(where);
   }
 }
