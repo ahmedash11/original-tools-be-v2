@@ -1,3 +1,4 @@
+import {authenticate} from '@loopback/authentication';
 import {inject} from '@loopback/core';
 import {
   Count,
@@ -18,15 +19,18 @@ import {
   put,
   requestBody,
 } from '@loopback/rest';
+import {SecurityBindings, securityId, UserProfile} from '@loopback/security';
 import axios from 'axios';
 import SHA256 from 'sha256';
 import {DbDataSource} from '../../datasources';
-import {Address, Customer, Order} from '../../models';
+import {Address, Customer, Order, Shops} from '../../models';
 import {
   AddressRepository,
   CustomerRepository,
   OrderProductRepository,
   OrderRepository,
+  ShopsRepository,
+  UserRepository,
 } from '../../repositories';
 
 const MerchantCode = process.env.MERCHANTCODE;
@@ -46,6 +50,10 @@ export class OrderController {
     public addressRepository: AddressRepository,
     @repository(OrderProductRepository)
     public orderProductRepository: OrderProductRepository,
+    @repository(UserRepository)
+    public userRepository: UserRepository,
+    @repository(ShopsRepository)
+    public shopsRepository: ShopsRepository,
   ) {}
 
   @post('/orders', {
@@ -123,6 +131,7 @@ export class OrderController {
       let product = products.map(product => ({
         ...product,
         orderId: newOrder.id,
+        customerId: customerData.id,
       }));
       await this.orderProductRepository.createAll(product);
 
@@ -229,8 +238,27 @@ export class OrderController {
       },
     },
   })
-  async find(@param.filter(Order) filter?: Filter<Order>): Promise<Order[]> {
-    return this.orderRepository.find(filter);
+  @authenticate('jwt')
+  async find(
+    @inject(SecurityBindings.USER)
+    currentUserProfile: UserProfile,
+    @param.filter(Shops) filter?: Filter<Shops>,
+    @param.filter(Shops) filterr?: Filter<Order>,
+  ): Promise<any> {
+    // current user to ensure just the owner have acsess here
+    const userId = currentUserProfile[securityId];
+    const currenrUser = await this.userRepository.findById(userId);
+    const currentShopp = await (
+      await this.userRepository.shops(userId).find(filter)
+    )
+      .map(shop => shop.id)
+      .shift();
+    const currentShop = currentShopp!;
+    if (currenrUser.role == 'owner') {
+      return await this.orderRepository.find(filterr);
+    } else {
+      return await this.shopsRepository.orders(currentShop).find(filterr);
+    }
   }
 
   @patch('/orders', {

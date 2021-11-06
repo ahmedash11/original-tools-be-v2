@@ -1,8 +1,9 @@
 import {Entity, hasMany, hasOne, model, property} from '@loopback/repository';
 import {Address} from './address.model';
-import {Order} from './order.model';
 import {Quotation} from './quotation.model';
 import {Request} from './request.model';
+import {Order} from './order.model';
+import {OrderProduct} from './order-product.model';
 
 @model()
 export class Customer extends Entity {
@@ -45,9 +46,6 @@ export class Customer extends Entity {
   })
   mobile: string;
 
-  @hasMany(() => Order)
-  orders: Order[];
-
   @hasMany(() => Quotation)
   quotations: Quotation[];
 
@@ -56,6 +54,9 @@ export class Customer extends Entity {
 
   @hasOne(() => Address)
   address: Address;
+
+  @hasMany(() => Order, {through: {model: () => OrderProduct}})
+  orders: Order[];
 
   constructor(data?: Partial<Customer>) {
     super(data);
