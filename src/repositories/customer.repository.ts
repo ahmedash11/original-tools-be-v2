@@ -2,29 +2,26 @@ import {Getter, inject} from '@loopback/core';
 import {
   DefaultCrudRepository,
   HasManyRepositoryFactory,
-  repository, HasOneRepositoryFactory} from '@loopback/repository';
+  HasOneRepositoryFactory,
+  repository, HasManyThroughRepositoryFactory} from '@loopback/repository';
 import {DbDataSource} from '../datasources';
 import {
+  Address,
   Customer,
   CustomerRelations,
-  Order,
   Quotation,
-  Request, Address} from '../models';
+  Request, Order, OrderProduct} from '../models';
+import {AddressRepository} from './address.repository';
 import {OrderRepository} from './order.repository';
 import {QuotationRepository} from './quotation.repository';
 import {RequestRepository} from './request.repository';
-import {AddressRepository} from './address.repository';
+import {OrderProductRepository} from './order-product.repository';
 
 export class CustomerRepository extends DefaultCrudRepository<
   Customer,
   typeof Customer.prototype.id,
   CustomerRelations
 > {
-  public readonly orders: HasManyRepositoryFactory<
-    Order,
-    typeof Customer.prototype.id
-  >;
-
   public readonly quotations: HasManyRepositoryFactory<
     Quotation,
     typeof Customer.prototype.id
@@ -35,7 +32,15 @@ export class CustomerRepository extends DefaultCrudRepository<
     typeof Customer.prototype.id
   >;
 
-  public readonly address: HasOneRepositoryFactory<Address, typeof Customer.prototype.id>;
+  public readonly address: HasOneRepositoryFactory<
+    Address,
+    typeof Customer.prototype.id
+  >;
+
+  public readonly orders: HasManyThroughRepositoryFactory<Order, typeof Order.prototype.id,
+          OrderProduct,
+          typeof Customer.prototype.id
+        >;
 
   constructor(
     @inject('datasources.db') dataSource: DbDataSource,
@@ -44,10 +49,17 @@ export class CustomerRepository extends DefaultCrudRepository<
     @repository.getter('QuotationRepository')
     protected quotationRepositoryGetter: Getter<QuotationRepository>,
     @repository.getter('RequestRepository')
-    protected requestRepositoryGetter: Getter<RequestRepository>, @repository.getter('AddressRepository') protected addressRepositoryGetter: Getter<AddressRepository>,
+    protected requestRepositoryGetter: Getter<RequestRepository>,
+    @repository.getter('AddressRepository')
+    protected addressRepositoryGetter: Getter<AddressRepository>, @repository.getter('OrderProductRepository') protected orderProductRepositoryGetter: Getter<OrderProductRepository>,
   ) {
     super(Customer, dataSource);
-    this.address = this.createHasOneRepositoryFactoryFor('address', addressRepositoryGetter);
+    this.orders = this.createHasManyThroughRepositoryFactoryFor('orders', orderRepositoryGetter, orderProductRepositoryGetter,);
+    this.registerInclusionResolver('orders', this.orders.inclusionResolver);
+    this.address = this.createHasOneRepositoryFactoryFor(
+      'address',
+      addressRepositoryGetter,
+    );
     this.registerInclusionResolver('address', this.address.inclusionResolver);
     this.requests = this.createHasManyRepositoryFactoryFor(
       'requests',
@@ -62,10 +74,5 @@ export class CustomerRepository extends DefaultCrudRepository<
       'quotations',
       this.quotations.inclusionResolver,
     );
-    this.orders = this.createHasManyRepositoryFactoryFor(
-      'orders',
-      orderRepositoryGetter,
-    );
-    this.registerInclusionResolver('orders', this.orders.inclusionResolver);
   }
 }

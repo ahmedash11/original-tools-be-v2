@@ -24,6 +24,8 @@ export class OrderShopsController {
     @param.path.number('id') id: number,
     @param.query.object('filter') filter?: Filter<Shops>,
   ): Promise<Shops[]> {
-    return this.orderRepository.shops(id).find(filter);
+    return this.orderRepository
+      .shops(id)
+      .find({include: [{relation: 'products'}]});
   }
 }
