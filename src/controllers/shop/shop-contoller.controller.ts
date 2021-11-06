@@ -85,30 +85,20 @@ export class ShopContoller {
       },
     },
   })
-  @authenticate('jwt')
   async fileUpload(
     @requestBody.file()
-    currentUserProfile: UserProfile,
     request: Request,
     @inject(RestBindings.Http.RESPONSE)
     response: Response,
   ): Promise<object> {
-    // current user to ensure just the owner have acsess here
-    const userId = currentUserProfile[securityId];
-    const currenrUser = this.userRepository.findById(userId);
-
-    if ((await currenrUser).role == 'owner') {
-      return new Promise<object>((resolve, reject) => {
-        this.handler(request, response, (err: unknown) => {
-          if (err) reject(err);
-          else {
-            resolve(getFilesAndFields(request, 'shops'));
-          }
-        });
+    return new Promise<object>((resolve, reject) => {
+      this.handler(request, response, (err: unknown) => {
+        if (err) reject(err);
+        else {
+          resolve(getFilesAndFields(request, 'products'));
+        }
       });
-    } else {
-      throw new HttpErrors.Forbidden('acces denied');
-    }
+    });
   }
 
   @get('/shops/count')
