@@ -2,7 +2,7 @@
 // Node module: @loopback/example-file-transfer
 // This file is licensed under the MIT License.
 // License text available at https://opensource.org/licenses/MIT
-
+// TODO: delete if not used (deprectaed)
 import {
   BindingScope,
   config,
@@ -29,7 +29,8 @@ export class FileUploadProvider implements Provider<FileUploadHandler> {
     }
   }
 
-  value(): FileUploadHandler {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  value(): any {
     return multer(this.options).any();
   }
 }

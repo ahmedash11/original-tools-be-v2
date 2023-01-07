@@ -1,11 +1,11 @@
-import {Entity, hasOne, model, property, hasMany} from '@loopback/repository';
-import {UserCredentials} from './user-credentials.model';
+import {Entity, hasMany, hasOne, model, property} from '@loopback/repository';
 import {Shops} from './shops.model';
+import {UserCredentials} from './user-credentials.model';
 
 @model()
 export class User extends Entity {
   @property({
-    type: 'string',
+    type: 'number',
     generated: true,
     id: true,
   })
